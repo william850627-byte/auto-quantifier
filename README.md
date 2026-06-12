@@ -91,10 +91,10 @@ Built entirely on a dual-engine Web Worker architecture, AQ processes lossless m
 
 ## 🎬 Visual Highlights (Features in Action)
 
-### 0. Basic
+### 0. Hysteresis Thresholding with BFS (Basic)
 
 <div align="center">
-  <img src="https://github.com/user-attachments/assets/e0f025ac-03a9-4ca6-b152-02eb681c388e" alt="Basic" width="800">
+  <img src="https://github.com/user-attachments/assets/20b26cad-aa9e-45f1-a017-9c6e093fd959" alt="Basic" width="800">
 </div>
 <br>
 
