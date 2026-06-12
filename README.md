@@ -102,7 +102,7 @@ Built entirely on a dual-engine Web Worker architecture, AQ processes lossless m
 Forget manual thresholding. AQ simulates a "water-level descent" (Threshold Descent) to find the most stable topological plateau for each band. It automatically locks onto strong signals while employing adaptive morphological sweeps to rescue faint bands submerged in background noise.
 
 <div align="center">
-  <img src="https://via.placeholder.com/800x400/1e1e1e/8be9fd?text=[+Upload+Auto_HDR.gif+Here+]" alt="Auto HDR Demo" width="800">
+  <img src="./assets/Auto HDR_03_2.6X.gif" alt="Auto HDR Demo" width="800">
 </div>
 <br>
 
