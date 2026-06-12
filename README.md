@@ -102,7 +102,7 @@ Built entirely on a dual-engine Web Worker architecture, AQ processes lossless m
 Forget manual thresholding. AQ simulates a "water-level descent" (Threshold Descent) to find the most stable topological plateau for each band. It automatically locks onto strong signals while employing adaptive morphological sweeps to rescue faint bands submerged in background noise.
 
 <div align="center">
-  <img src="./assets/Auto HDR_03_2.6X.gif" alt="Auto HDR Demo" width="800">
+  <img src="./assets/EMSR_01.gif" alt="Auto HDR Demo" width="800">
 </div>
 <br>
 
@@ -110,7 +110,7 @@ Forget manual thresholding. AQ simulates a "water-level descent" (Threshold Desc
 Tired of fused and smeared bands? AQ projects 2D pixels into a 1D spectral valley. Combined with a Log-Driven Breadth-First Search (BFS) restricted by dynamic lane clamping, it applies **Intensity-Symmetric Trimming** to cleanly cleave touching bands without the infamous "asymmetric tailing" artifacts.
 
 <div align="center">
-  <img src="https://via.placeholder.com/800x400/1e1e1e/bd93f9?text=[+Upload+Magic_Wand.gif+Here+]" alt="Magic Wand Demo" width="800">
+  <img src="./assets/Magicwand.gif" alt="Magic Wand Demo" width="800">
 </div>
 <br>
 
@@ -118,7 +118,7 @@ Tired of fused and smeared bands? AQ projects 2D pixels into a 1D spectral valle
 Publishing in top-tier journals requires absolute data integrity. AQ automatically computes **Double-Normalization Fold Changes** (Internal Control & Reference Lane). With one click, it exports a Read-Only PDF report embedded with **SHA-256 cryptographic fingerprints** and an immutable Audit Trail.
 
 <div align="center">
-  <img src="https://via.placeholder.com/800x400/1e1e1e/50fa7b?text=[+Upload+PDF_Report.gif+Here+]" alt="PDF Report Demo" width="800">
+  <img src="./assets/BASIC_03.gif" alt="PDF Report Demo" width="800">
 </div>
 
 ---
