@@ -15,6 +15,29 @@
 
 完成這些後，您的專案大門就會瞬間變得極具「國際學術頂刊與頂級開源專案」的氣勢！🚀
 
+### 🎬 行動指南：如何把 GIF 動圖放進這份 README？
+
+這份 README 的骨架已經具備了頂級開源專案的氣勢，現在我們需要把「靈魂（動圖）」填進去。請按照以下 3 步走：
+
+#### 1. 建立測試數據資料夾 (`demo_data`)
+在您的實體專案資料夾 (`aq-refactored`) 中，建立一個名為 `demo_data` 的資料夾。挑選一張有代表性、具備挑戰性（有沾黏或變形）的 16/32-bit TIFF 圖檔放進去，並命名為 `Sample_Blot_32bit.tif`。
+
+#### 2. 錄製 3 段震撼的 GIF 動圖 (最重要的武器！)
+*   **推薦工具：** Windows 用戶強烈建議使用 **[ScreenToGif](https://www.screentogif.com/)**（免費開源，可以精準剪輯不要的畫格，並添加按鍵提示，讓檔案變小又專業）。
+*   **錄製訣竅：** 
+    *   開啟 `npm run dev` 在本地端錄製。
+    *   **不要全螢幕錄影！** 將軟體的錄影框縮小，**只框住「左側控制面板」與「中間的影像畫布區」**。這樣上傳後，GIF 的字體才會大且清晰。
+    *   節奏要明快，每段 GIF 長度控制在 **5 ~ 10 秒**內。
+    *   檔案大小盡量壓在 **3MB ~ 5MB**，確保全球各地的 Reviewer 載入網頁時不會卡頓。
+
+#### 3. 取得圖片網址（白嫖 GitHub 免費圖床秘技）
+如果您不想自己架設伺服器放圖片，最快的做法是：
+1. 將專案推上您的 GitHub Repository 後，點擊上方的 **"Issues"** 頁籤 -> 點擊 **"New Issue"**。
+2. **直接把您錄好的 GIF 檔案拖曳進文字輸入框裡**。
+3. GitHub 會自動上傳並在框內產生一串類似 `https://github.com/user-attachments/assets/...` 的 Markdown 圖片語法。
+4. **把那串網址複製下來，貼進 README 對應的 `<img src="...">` 裡面，替換掉預設的 `placehold.co` 佔位圖！** 
+*(註：那個 Issue 不用真的 Submit 發布出去，只要網址產生出來，圖片就永久存在 GitHub 伺服器上了，您可以直接關閉分頁)。*
+
 <div align="center">
 
 # 🧬 Auto Quantifier (AQ)
@@ -36,11 +59,11 @@
 
 <br/>
 
-## 🎯 Overview
+## 🎯 Overview & The "Why"
 
-**Auto Quantifier (AQ)** is a high-performance, browser-based automated scientific imaging workstation explicitly designed to address the reproducibility crisis in Western Blotting (WB) and densitometry analysis. 
+**Auto Quantifier (AQ)** is a high-performance, browser-based automated scientific imaging workstation explicitly designed to address the **reproducibility crisis** in Western Blotting (WB) and densitometry analysis. 
 
-Traditional tools (e.g., ImageJ/Fiji) rely heavily on subjective manual bounding boxes and global thresholding, leading to severe inter-operator bias. AQ revolutionizes this workflow by introducing **Maximally Stable Extremal Regions (MSER)** for topology-based automated extraction and **Log-Driven 1D Watershed segmentation** for resolving fused, smeared bands.
+Traditional tools (e.g., ImageJ/Fiji) rely heavily on subjective manual bounding boxes and global thresholding, leading to severe inter-operator bias. AQ establishes an objective, mathematically rigorous boundary for every protein band, effectively eliminating human bias. AQ revolutionizes this workflow by introducing **Hysteresis Thresholding with Breadth-First Search (BFS)** & **Maximally Stable Extremal Regions (MSER)** for topology-based automated extraction and **Log-Driven 1D Watershed segmentation** for resolving weakened, fused, smeared bands.
 
 Built entirely on a dual-engine Web Worker architecture, AQ processes lossless multi-channel 16/32-bit Float TIFFs locally. **Your unpublished sensitive biomedical data never leaves your device**, ensuring absolute data privacy, Zero-Latency interactions, and GLP-compliant audit trails without requiring any server-side installation or data uploading.
 
@@ -53,6 +76,7 @@ Built entirely on a dual-engine Web Worker architecture, AQ processes lossless m
 - **🪄 Log-Driven Magic Wand**: Employs logarithmic spatial mapping coupled with dynamic lane clamping to forcefully extract extremely weak signals from high-background noise.
 - **🔪 1D Projected Watershed Segmentation**: Intelligently separates physically fused/smeared bands using 1D spectral valley detection and intensity-symmetric trimming, preventing asymmetric trailing artifacts.
 - **📐 Asymmetrical Piecewise Quadratic Warp**: Corrects the classic "smiling effect" in electrophoresis using independent left/right parabolic mathematical mapping, conserving absolute integrated intensity.
+- **🗂️ Multi-channel Alignment**: Supports Li-COR multiplex TIFFs with absolute physical coordinate locking across different fluorescence channels.
 
 ### 🛡️ Data Integrity & GLP Compliance
 - **🔒 Cryptographic Fingerprinting**: Automatically generates a unique SHA-256 hash for every uploaded multiplex 16/32-bit TIFF, preventing data falsification.
@@ -62,6 +86,40 @@ Built entirely on a dual-engine Web Worker architecture, AQ processes lossless m
 ### ⚡ Serverless Edge Computing
 - **🌐 Privacy-First Architecture**: Runs 100% locally in modern browsers (Chrome, Edge, Safari). Complete extraction and processing within the browser using Ping-Pong buffer Web Workers. No server uploads, no cloud bottlenecks, no data leakage.
 - **🧠 Extreme Memory Management**: Utilizes Dual-Engine Web Workers with Zero-Copy architecture and aggressive GC to prevent out-of-memory (OOM) crashes even with gigapixel floating-point matrices.
+
+---
+
+## 📸 Visual Highlights (Features in Action)
+
+### 0. Basic
+
+<div align="center">
+  <img src="https://github.com/user-attachments/assets/e0f025ac-03a9-4ca6-b152-02eb681c388e" alt="Basic" width="800">
+</div>
+<br>
+
+### 1. ✨ Auto HDR: Topographical MSER Scanning
+Forget manual thresholding. AQ simulates a "water-level descent" (Threshold Descent) to find the most stable topological plateau for each band. It automatically locks onto strong signals while employing adaptive morphological sweeps to rescue faint bands submerged in background noise.
+
+<div align="center">
+  <img src="https://via.placeholder.com/800x400/1e1e1e/8be9fd?text=[+Upload+Auto_HDR.gif+Here+]" alt="Auto HDR Demo" width="800">
+</div>
+<br>
+
+### 2. 🪄 Magic Wand: Log-Driven Rescue & 1D Watershed
+Tired of fused and smeared bands? AQ projects 2D pixels into a 1D spectral valley. Combined with a Log-Driven Breadth-First Search (BFS) restricted by dynamic lane clamping, it applies **Intensity-Symmetric Trimming** to cleanly cleave touching bands without the infamous "asymmetric tailing" artifacts.
+
+<div align="center">
+  <img src="https://via.placeholder.com/800x400/1e1e1e/bd93f9?text=[+Upload+Magic_Wand.gif+Here+]" alt="Magic Wand Demo" width="800">
+</div>
+<br>
+
+### 3. 📋 Biostats & GLP-Compliant Audit Reports
+Publishing in top-tier journals requires absolute data integrity. AQ automatically computes **Double-Normalization Fold Changes** (Internal Control & Reference Lane). With one click, it exports a Read-Only PDF report embedded with **SHA-256 cryptographic fingerprints** and an immutable Audit Trail.
+
+<div align="center">
+  <img src="https://via.placeholder.com/800x400/1e1e1e/50fa7b?text=[+Upload+PDF_Report.gif+Here+]" alt="PDF Report Demo" width="800">
+</div>
 
 ---
 
