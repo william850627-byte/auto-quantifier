@@ -89,7 +89,7 @@ Built entirely on a dual-engine Web Worker architecture, AQ processes lossless m
 
 ---
 
-## 📸 Visual Highlights (Features in Action)
+## 🎬 Visual Highlights (Features in Action)
 
 ### 0. Basic
 
