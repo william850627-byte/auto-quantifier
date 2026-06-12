@@ -1,0 +1,9 @@
+# 絕對不要上傳龐大的套件庫
+node_modules/
+
+# 不要上傳每次自動生成的打包結果
+dist/
+
+# 作業系統的隱藏垃圾檔
+.DS_Store
+Thumbs.db

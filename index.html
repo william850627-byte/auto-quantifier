@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>ᴬ𝖖</text></svg>">
+    <title>Auto Quantifier - v12.5.08</title>
+
+    <meta name="description" content="Auto Quantifier is a browser-based, automated Western Blot image quantification tool specifically designed for life science and biomedical research. It supports lossless 16/32-bit TIFF processing and real-time biostatistical ratio analysis.">
+    <meta name="keywords" content="Western Blot, Western Blot auto quantification, Protein auto quantification, 16-bit TIFF, 32-bit TIFF, TIFF image analysis, Biostatistics, Image auto quantitative, Densitometry, ImageJ alternative, Breadth-First Search, Watershed algorithm, Intensity-projected watershed algorithms, Molecular biology, Biomedical software, NCKU">
+    <meta name="author" content="SHIH HONG_William Frederic_YIR • HUANG">
+    <meta name="copyright" content="© 2026 • Auto Quantifier">
+    <meta name="robots" content="index, follow">
+
+    <meta property="og:title" content="Auto Quantifier - Western Blot quantitative workstation">
+    <meta property="og:description" content="Edge-Computing Automated Western Blot Quantification Platform. Incorporates 'Intensity-Projected Watershed Segmentation' to eliminate the hassle of bounding smeared bands">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Auto Quantifier">
+    <meta property="og:url" content="https://auto-quantifier.netlify.app/"> 
+    <meta property="og:image" content="https://drive.google.com/file/d/1-hm6b7cYFWIzOR-1IJ_rYDgMLrDhVP6c/view?usp=sharing">
+    <meta name="twitter:card" content="summary_large_image">
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "Auto Quantifier",
+      "operatingSystem": "Web Browser (Chrome, Edge, Safari)",
+      "applicationCategory": "ScienceApplication",
+      "description": "A high-performance, high-precision browser-based auto quantification workstation for Western Blot and scientific imaging, featuring robust 16/32-bit TIFF parsing, dynamic ratio analysis, Zero-GC edge computing capabilities, and 1D intensity-projected watershed segmentation for smeared bands.",
+      "author": {
+        "@type": "Person",
+        "ORCiD": "0009-0008-2033-4880",
+        "name": "SHIH HONG_William Frederic_YIR • HUANG"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "NCKU BIMB Yu Lab"
+      },
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "softwareVersion": "12.5.08",
+      "featureList": [
+        "16-bit / 32-bit Float TIFF Lossless Parsing",
+        "Auto quantification",
+        "Breadth-First Search",
+        "1D Intensity-Projected Watershed Algorithm",
+        "Real-time Densitometry & Bio-Stats Ratio Calculation",
+        "Multi-touch Pinch-to-Zoom Interface",
+        "Global Keyboard Shortcuts",
+        "Parametric Vector Inverse-Rotation Overlays",
+        "Asynchronous Web Worker Parsing",
+        "Immutable State Management"
+      ]
+    }
+    </script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+    
+    <link rel="stylesheet" href="./src/style.css">
+
+</head>
+<body>
+
+    <header>
+        <h2>
+            <button id="mobileMenuBtn" class="mobile-toggle" title="選單">☰</button>
+            <span title="© 2026 🐕‍🦺 SHIH HONG_William Frederic_YIR • HUANG 🍌 NCKU_BIMB_Yu Lab">
+            𝓐uto 𝕼uantifier</span> 
+            <span class="version-tag">v12.5.08_ 🪄Magic Wand</span>
+        </h2>
+        <div class="header-badges">
+            <span id="zoomBadge" class="badge badge-dark" style="display:none;">Zoom: 100%</span>
+            <span id="bitDepthBadge" class="badge badge-gray">等待影像</span>
+            <span id="statusBadge" class="badge badge-green">系統閒置</span>
+            <button id="helpBtn" class="btn-help" title="Architecture & Algorithms">?</button>
+        </div>
+    </header>
+    
+    <div id="sidebarBackdrop" class="sidebar-backdrop"></div>
+
+    <div class="app-container">
+        <div class="sidebar">
+            <div class="sidebar-content">
+                <div id="modeBanner" class="mode-banner">當前模式：全圖檢視</div>
+
+                <div class="control-card">
+                    <label>1. Upload Image</label>
+                    <input type="file" id="fileInput" accept=".tif, .tiff, .jpg, .jpeg, .png" multiple>
+                    <span class="hint-text">支援 16-bit/32-bit 無損定量與 8-bit 預覽</span>
+                    <span class="hint-text">點擊畫布上的 Band 即可「鎖定🔒」 (Ctrl+Z 撤銷)</span>
+                    
+                    <div id="channelControl" style="display: none; margin-top: 12px; padding-top: 10px; border-top: 1px dashed var(--border-color);">
+                        <label style="font-size: 0.85em; font-weight: bold; color: #6f42c1; display: flex; align-items: center; gap: 5px;">
+                            <span style="font-size: 1.2em;">🎨</span> Multiplex Channels
+                        </label>
+                        <select id="channelSelect" style="width: 100%; padding: 6px; margin-top: 5px; border-radius: 4px; border: 1px solid #ced4da; font-weight: bold; color: #495057; cursor: pointer;">
+                            </select>
+                        <span class="hint-text" style="margin-top: 5px; color: var(--primary);">Tip: 保持 ROI 框選，切換通道即可進行同座標位置的擷取與 Ratio 計算！</span>
+                    </div>
+                </div>
+
+                <div class="control-card">
+                    <label>2. Select Interest Region 
+                        <button id="drawRoiBtn" class="btn btn-crop" disabled><span title="SHIFT+C">✂️ Clipping</span></button>
+                    </label>
+                    <span class="hint-text">框選單張 Membrane 進行獨立分析。待完成分析，點擊「Ctrl+S 儲存」歸檔。</span>
+                    <div id="roiStatus" class="hint-text" style="color:var(--text-muted); font-weight:bold; margin-top:5px;">目前狀態: 分析全圖</div>
+                </div>
+
+                <div class="sidebar-section">
+                    <h3 class="section-title" style="font-size: 0.9em; color: var(--primary); border-bottom: 1px solid #eee; padding-bottom: 5px;">Correction & Preprocessing</h3>
+                    <div class="control-card">
+                        <label>3. Rotation Correction <span id="angleVal" class="val-display">0°</span></label>
+                        <span class="hint-text">建議區域: -3° 至 +3°</span>
+                        <input type="range" id="rotationAngle" value="0" min="-15" max="15" step="0.1">
+                        <span class="hint-text" style="color:var(--danger)">注意：調整旋轉將重置當前區域的圈選</span>
+                    </div>
+
+                    <div class="control-card">
+                        <label style="display:flex; justify-content:space-between; align-items:center;">
+                            <span>3.5. Smile Correction</span>
+                            <button id="linkSmileBtn" class="btn" style="padding: 2px 6px; font-size: 0.8em; background: var(--primary); color: white; border-radius: 4px;" title="解除/鎖定左右連動">🔗 Linked</button>
+                        </label>
+                        <span class="hint-text">左/右獨立二階分段拋物線擬合 (∪/∩)</span>
+                        <div style="display: flex; gap: 8px; align-items: center; margin-top: 5px;">
+                            <div style="flex: 1; text-align: center;">
+                                <span id="smileValL" class="val-display" style="font-size: 0.9em; color: #d63384;">L: 0</span>
+                                <input type="range" id="smileAngleL" value="0" min="-50" max="50" step="1">
+                            </div>
+                            <div style="flex: 1; text-align: center;">
+                                <span id="smileValR" class="val-display" style="font-size: 0.9em; color: #20c997;">R: 0</span>
+                                <input type="range" id="smileAngleR" value="0" min="-50" max="50" step="1">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="control-card">
+                        <label>4. Rolling Ball Radius <span id="rbVal" class="val-display" style="color: var(--success);">--</span>
+                            <label style="font-size: 0.8em; color: var(--success); cursor: pointer; display: flex; align-items: center; gap: 4px;">
+                                <input type="checkbox" id="autoBgToggle" checked> 自動 
+                            </label>
+                        </label>
+                        <span id="rbHint" class="hint-text">建議：最寬 Band 的 1.5 倍以上</span>
+                        <input type="range" id="rbRadius" value="50" min="1" max="200" step="1" disabled>
+                        <span class="hint-text">Content-Aware Rolling Ball radius Estimation</span>
+                    </div>
+                </div>
+
+                <div class="sidebar-section">
+                    <h3 class="section-title" style="font-size: 0.9em; color: var(--primary); border-bottom: 1px solid #eee; padding-bottom: 5px;">Algorithm & Extraction</h3>
+                    <div class="control-card">
+                        <label>5. Hysteresis Thresholding with BFS</label>
+                        <div class="hdr-slider-container">
+                            <div class="hdr-labels">
+                                <span style="color: var(--success)">Boundary: <span id="valBoundary">2.0%</span></span>
+                                <span style="color: var(--primary)">Core: <span id="valCore">15.0%</span></span>
+                            </div>
+                            <div class="hdr-track" id="hdrTrack">
+                                <div class="hdr-range" id="hdrRange"></div>
+                                <div class="hdr-thumb" id="thumbBoundary" data-target="boundary"></div>
+                                <div class="hdr-thumb" id="thumbCore" data-target="core"></div>
+                            </div>
+                        </div>
+                        <span class="hint-text">按住中間平移區間，拉兩側解綁微調。</span>
+                        <span id="threshHint" class="hint-text">於高閾值鎖定強訊號後，再調低找弱訊號</span>
+                        <div class="scale-adjust-container">
+                            <div class="hdr-labels">
+                                <span>Linearity Scale</span><span id="curvePowerLabel">2.5x</span>
+                            </div>
+                            <input type="range" id="curvePowerSlider" class="native-range" min="1.0" max="4.0" step="0.1" value="2.5">
+                        </div>
+                        
+                        <div id="autoHdrConfigPanel" style="display: none; background: #e9ecef; padding: 10px; border-radius: 6px; margin-top: 10px; border: 1px dashed #adb5bd; box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);">
+                            <div style="font-size: 0.85em; color: #286ca7; font-weight: bold; margin-bottom: 8px;">✨ Scan Parameters of MSER</div>
+                            <div style="display: flex; flex-direction: column; gap: 6px;">
+                                <label style="font-size: 0.8em; font-weight: 600;" title="掃描起點">Sweep Start<span id="valMserStart" style="float: right; color: var(--danger);" title="設定掃描起點，通常從高強度核心開始往下掃">70.0%</span>
+                                    <input type="range" id="mserStartSlider" min="40" max="95" step="1" value="70.0" class="native-range">
+                                </label>
+                                <label style="font-size: 0.8em; font-weight: 600;" title="雜訊閾值">Sweep End<span id="valMserEnd" style="float: right; color: var(--success);" title="設定掃描終點，即雜訊底線，避免浪費算力">10.0%</span>
+                                    <input type="range" id="mserEndSlider" min="0.5" max="30" step="0.5" value="10.0" class="native-range">
+                                </label>
+                                <label style="font-size: 0.8em; font-weight: 600;" title="溢流容忍度">Spillover Threshold<span id="valMserGrowth" style="float: right; color: #0d6efd;" title="當面積單次增長率超過此值，視為「溢流/相連」，將自動鎖定前一個穩定狀態">50%</span>
+                                    <input type="range" id="mserGrowthSlider" min="1" max="150" step="1" value="50" class="native-range">
+                                </label>
+                                
+                                <div style="border-top: 1px dashed #ccc; margin-top: 6px; padding-top: 6px;">
+                                    <label style="font-size: 0.8em; font-weight: 600; color: #d63384; cursor: pointer; display: flex; align-items: center; gap: 5px;" title="在一般掃描結束後，從底層雜訊中打撈被誤判的微弱訊號">
+                                        <input type="checkbox" id="mserPhase3Toggle" checked>
+                                        Add Phase 3 Sweep
+                                    </label>
+                                    <label style="font-size: 0.8em; font-weight: 600; color: #198754; cursor: pointer; display: flex; align-items: center; gap: 5px;" title="自動刪除旋轉後超出原 ROI 邊界的冗餘波段">
+                                        <input type="checkbox" id="mserCropToggle" checked>
+                                        Remove External Blobs
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="hdr-btn-group">
+                            <div style="display: flex; flex: 2; gap: 4px;">
+                                <button id="lockAllBtn" class="btn btn-lock-all" disabled><span title="鎖定目前抓到的所有 Band">🔒</span></button>
+                                <button id="unlockAllBtn" class="btn btn-unlock-all" disabled><span title="解除當前所有鎖定">🔓</span></button>
+                            </div>
+                            <button id="magicWandBtn" class="btn" disabled style="background-color: #fa4b6b; color: white; flex: 1; font-size: 0.85em; padding: 6px;"><span title="Magic Wand (Ctrl+Click)">🪄</span></button>
+                            <button id="autoHdrBtn" class="btn btn-auto-hdr" disabled style="flex: 2;"><span title="自動執行降維掃描">✨ Auto HDR</span></button>
+                        </div>
+                    </div>
+
+                    <div class="control-card">
+                        <label>6. Area Filtering <span id="areaVal" class="val-display">500 px</span></label>
+                        <input type="range" id="minArea" value="500" min="0" max="1000" step="5">
+                        <span class="hint-text">排除微小雜點</span>
+                    </div>
+                </div>
+
+                <div class="action-group">
+                    <button id="analyzeBtn" class="btn btn-analyze" disabled>▶ 𝓓ynamic Analysis</button>
+                    <button id="resetBtn" class="btn btn-reset" disabled><span title="Esc">♻︎ 𝓡eset</span></button>
+                    <button id="saveBtn" class="btn btn-save" disabled><span title="Ctrl+S">📌 𝓢ave Block</span></button>
+                </div>
+                
+                <div class="control-card" style="margin-top: 15px; border-color: #6f42c1; box-shadow: 0 0 5px rgba(111, 66, 193, 0.1);">
+                    <label style="color: #6f42c1;">7. Session Identity <span title="合規電子簽章所需欄位">📝</span></label>
+                    <div style="display: flex; flex-direction: column; gap: 6px; margin-top: 8px;">
+                        <input type="text" id="operatorInput" placeholder="Operator" style="padding: 6px; font-size: 0.9em; border: 1px solid #ced4da; border-radius: 4px;">
+                        <input type="text" id="expIdInput" placeholder="Experiment ID" style="padding: 6px; font-size: 0.9em; border: 1px solid #ced4da; border-radius: 4px;">
+                    </div>
+                    <span class="hint-text" style="margin-top: 6px;">❗This information will be hardcoded into Digital Signatures & Audit Trails</span>
+                </div>
+
+                <div style="font-size: 0.8em; color: var(--text-muted); font-weight: bold; margin-top: 10px; margin-bottom: 2px;">Export & Session</div>
+                <div class="action-group">
+                    <button id="exportSessionBtn" class="btn" disabled style="background-color: #20c997; color: white;"><span title="將當前所有歸檔數據存為加密的 .aq 專案檔">💾 Export <code>.aq</code></span></button>
+                    <button id="exportImgBtn" class="btn btn-export-img" disabled><span title="Ctrl+E">🎬 Export img</span></button>
+                    <button id="importSessionBtn" class="btn" disabled style="background-color: #6c757d; color: white;"><span title="載入驗證 .aq 專案檔">📂 Import <code>.aq</code></span></button>
+                    <button id="exportBtn" class="btn btn-export" disabled><span title="Ctrl+D">📄 Export CSV</span></button>
+                    <button id="exportPdfBtn" class="btn" disabled style="background-color: #dc3545; color: white; grid-column: span 2; padding: 12px; font-size: 1.05em;"><span title="產生唯讀且帶有稽核軌跡的 A4 實驗報告">📋 Generate PDF Report</span></button>
+                    <input type="file" id="importSessionInput" accept=".aq,.json" style="display:none;">
+                </div>
+            </div>
+        </div>
+
+        <div class="workspace" id="workspace">
+            <div class="canvas-section" id="canvasSection">
+                <div class="scroll-spacer" id="scrollSpacer">
+                    <div class="canvas-stack" id="canvasStack">
+                        <canvas id="imgCanvas"></canvas>
+                        <canvas id="overlayCanvas"></canvas>
+                        <canvas id="uiCanvas"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="resizer" id="resizer" title="上下拖曳以調整表格高度"></div>
+
+            <div class="table-section" id="tableSection">
+                <div class="table-header">
+                    <h3>Summary of Quantitative Data Table <span id="savedCounter" class="saved-counter">Archived: 0 Block</span></h3>
+                </div>
+                
+                <div class="analysis-toolbar">
+                    <span style="color: var(--primary); font-weight: 800;">📊 Analysis</span>
+                    
+                    <label title="打勾後，只有被鎖定(🔒)的訊號會參與 Ratio 與對照組倍數計算" style="margin-right: 15px; cursor: pointer; color: var(--danger);">
+                        <input type="checkbox" id="onlyLockedFilter" checked> Only calculate the lock signals
+                    </label>
+
+                    <label title="用於計算如 C/B ratio (CFTR) 或單一訊號佔整體之相對強度">Lane Operations: 
+                        <select id="intraRatioSelect">
+                            <option value="none">-</option>
+                            <option value="sum">Sum of Lane Total</option>
+                            <option value="1/2">Band 1 / Band 2</option>
+                            <option value="2/1">Band 2 / Band 1</option>
+                            <option value="percent">% of Lane Total</option>
+                        </select>
+                    </label>
+                    
+                    <label title="跨區塊比較：選擇 Housekeeping Protein 所在的已存區塊做為基準區塊"> Ref ROI: 
+                        <select id="refRoiSelect">
+                            <option value="none">None_Only 1 block</option>
+                        </select>
+                    </label>
+                    
+                    <label title="將指定 Lane 設為 1.0，觀察其他 Lane 的 Relative Density 之倍數變化">Control Lane: 
+                        <select id="refLaneSelect">
+                            <option value="none">None comparison</option>
+                        </select>
+                    </label>
+                </div>
+
+                <div class="table-scroll">
+                    <table id="resultTable">
+                        <thead>
+                            <tr>
+                                <th>(ROI)</th>
+                                <th>Lane</th>
+                                <th>State</th>
+                                <th>Center of Mass</th>
+                                <th><i>&Sigma;</i> [Intensity]</th>
+                                <th>Sum & Ratio</th>
+                                <th>Operate</th> 
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody">
+                            <tr><td colspan="7" style="color: var(--text-muted); padding: 20px;">Please upload the image and click "▶ 𝓓ynamic Analysis" to generate data..</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="plotModal" class="plot-modal">
+        <div class="plot-header" id="plotHeader">
+            <h3 id="plotTitle">📈 Densitometry Profile</h3>
+            <div style="display: flex; gap: 10px; align-items: center;">
+                <button class="export-plot-btn" id="exportPlotBtn" title="匯出高畫質 PNG 圖表">📥 匯出</button>
+                <button class="close-plot-btn" id="closePlotBtn" title="關閉圖表">✖</button>
+            </div>
+        </div>
+        <div class="plot-body">
+            <canvas id="profilePlotCanvas"></canvas>
+            <div id="plotTooltip" class="plot-tooltip"></div>             <div class="plot-legend">
+                <span style="color:#0d6efd;font-weight:bold;">—</span> Intensity<br>
+                <span style="color:rgba(220,53,69,0.5);font-weight:bold;">|</span> Watershed<br>
+                <span style="display:inline-block;width:12px;height:12px;background:rgba(40,167,69,0.3);vertical-align:middle;margin-right:2px;"></span> Area
+            </div>
+        </div>
+    </div>
+    
+    <div id="methodologyModal" class="methodology-backdrop">
+        <div class="methodology-container">
+            <div class="methodology-header">
+                <h2><span style="font-size: 1.2em;">🔬</span> Auto Quantifier Methodology</h2>
+                <button id="closeMethodologyBtn" class="close-methodology-btn" title="關閉">✖</button>
+            </div>
+            <div class="methodology-body">
+                
+                <details class="methodology-section" open>
+                    <summary>
+                        <h3>1. System Architecture 系統核心架構</h3>
+                        <span class="toggle-icon"></span>
+                    </summary>
+                    <div class="details-content">
+                        <ul>
+                            <li>AutoQuantifier 採用 Serverless 的邊緣運算架構，將繁重的影像處理任務封裝於瀏覽器端執行，導入「主執行緒視圖與背景運算分離」以確保極端資料量下的互動流暢度及資料隱私。</li>
+                        </ul>
+                        <h4>1. Dual-Engine Web Workers 雙引擎邊緣運算架構</h4>
+                        <ul>
+                            <li><strong>Transient Decode Worker (瞬態解碼引擎)：</strong>專職負責 I/O 解析。動態生成以拆解多通道 TIFF 或非同步多檔佇列，透過 Zero-Copy 將 Float32 矩陣傳回主執行緒後<strong>立即強制終止 (Terminate)</strong>，實現極端記憶體回收 (Aggressive GC)，徹底消除處理大圖時的 OOM 隱患。</li>
+                            <li><strong>Persistent Math Worker (常駐數學引擎)：</strong>專注於數學形態學與拓撲掃描 (Rolling Ball, BFS, MSER)。利用 Ping-Pong Buffer 與主執行緒進行零拷貝通訊，確保高頻率互動下的極致流暢度。</li>
+                        </ul>
+                        <h4>2. Canvas Stack 多圖層疊棧視圖</h4>
+                        <ul>
+                            <li><strong>imgCanvas：</strong>負責底圖與對數映射後的高對比渲染。</li>
+                            <li><strong>overlayCanvas：</strong>負責幾何向量（Bounding Box、質心與狀態標籤）繪製。</li>
+                            <li><strong>uiCanvas：</strong>處理高頻率互動（如 ROI 拖曳、準星游標），避免不必要的重繪。</li>
+                        </ul>
+                        <h4>3. Memento Pattern 結構共享歷史狀態管理</h4>
+                        <ul>
+                            <li>採用不可變 (Immutable) 的單一資料流設計，以避免 OOM。</li>
+                            <li>利用展開運算子與 Reference 傳遞，僅備份參數與像素索引，不複製龐大矩陣。</li>
+                            <li>實現 30 Steps 無損歷史回溯 (Undo/Redo)。</li>
+                        </ul>
+                    </div>
+                </details>
+
+                <details class="methodology-section">
+                    <summary>
+                        <h3>2. Core Algorithms 核心演算法與數學模型</h3>
+                        <span class="toggle-icon"></span>
+                    </summary>
+                    <div class="details-content">
+                        <h4>1. Spatial Geometric Correction 空間幾何校正</h4>
+                        <ul>
+                            <li>系統不採用單一常數，而是導入<strong>左右獨立的分段二階多項式 (Asymmetrical Piecewise Quadratic Curve Fitting)</strong>，以精準校正非對稱的電泳微笑效應。</li>
+                            <li>演算法採用<strong>逆向空間映射 (Inverse Spatial Mapping)</strong> 尋找來源座標，再搭配雙線性插值 (Bilinear Interpolation) 重新分配像素能量，確保總積分量絕對不失真。</li>
+                        </ul>
+
+                        <details class="math-collapse">
+                            <summary>
+                                <div class="math-summary-content">
+                                    <span class="math-title">Asymmetrical Piecewise Quadratic Warp</span>
+                                    <span class="math-preview">$\Delta y_{src} = \Delta y_{dest} - k \cdot (x_{norm})^2$</span>
+                                </div>
+                                <span class="expand-indicator"></span>
+                            </summary>
+                            <div class="math-collapse-body">
+                                <p style="font-size: 0.9em; color: #6c757d; margin-top: 0; line-height: 1.5;">
+                                    為解決西方墨點法常見的「左右變形不均勻」問題，系統將 X 軸相對於質心 $c_x$ 進行正規化，並根據正負號套用獨立的扭曲常數 ($k_L, k_R$)，兩條獨立的拋物線於中心點完美平滑接合。
+                                </p>
+                                
+                                <div class="math-step">
+                                    <span class="step-label">Step 1: X-Axis Normalization (座標正規化)</span>
+                                    <div class="math-block">$$x_{norm} = \frac{x_{dest} - c_x}{c_x} \quad , \ x_{norm} \in [-1, 1]$$</div>
+                                </div>
+                                
+                                <div class="math-step">
+                                    <span class="step-label">Step 2: Piecewise Smile Factor (分段微笑因子決策)</span>
+                                    <div class="math-block">
+                                        $$k = \begin{cases} 
+                                        k_L & \text{if } x_{norm} &lt; 0 \\ 
+                                        k_R & \text{if } x_{norm} \ge 0 
+                                        \end{cases}$$
+                                    </div>
+                                </div>
+
+                                <div class="math-step">
+                                    <span class="step-label">Step 3: Inverse Mapping (逆向映射座標反推)</span>
+                                    <p style="font-size: 0.85em; color: #6c757d; margin: 5px 0 10px 0; text-align: center;">計算目標像素在原始矩陣中的真實對應偏移量 $\Delta y_{src}$：</p>
+                                    <div class="math-block">$$\Delta y_{src} = (y_{dest} - c_y) - k \cdot x_{norm}^2$$</div>
+                                </div>
+                                
+                                <div class="math-final" style="font-size: 0.95em;">
+                                    Bilinear Interpolation: $\quad P_{out} = \text{Bilinear}(x_{src}, \ y_{src})$
+                                </div>
+                            </div>
+                        </details>
+
+                        <h4>2. Downsampled Content-Aware Rolling Ball 動態降採樣滾球演算法</h4>
+<ul>
+    <li>基於數學形態學的 2D 滾球演算法 (Morphological Opening) 扣除背景。</li>
+    <li>當估算半徑 $r$ 過大時，利用縮放因子 $S$，在降採樣的微型矩陣上估算背景再利用雙線性插值放大，大幅降低運算成本：</li>
+</ul>
+<div class="math-block" style="margin-bottom: 15px;">$$S = \max\left(1, \lfloor \frac{r}{5} \rfloor\right)$$</div>
+
+<details class="math-collapse">
+    <summary>
+        <div class="math-summary-content">
+            <span class="math-title">Standard 2D Morphological Opening</span>
+            <span class="math-preview">$f \circ B = (f \ominus B) \oplus B$</span>
+        </div>
+        <span class="expand-indicator"></span>
+    </summary>
+    <div class="math-collapse-body">
+        <p style="font-size: 0.9em; color: #6c757d; margin-top: 0; line-height: 1.5;">
+            傳統 2D 滑動視窗的時間複雜度極高 $\mathcal{O}(W \cdot H \cdot r^2)$。系統將 2D 結構元素 $B$ 數學解構，轉換為水平 ($X$) 與垂直 ($Y$) 的 1D 陣列進行四道連續掃描，將時間複雜度極限降維至線性的 $\mathcal{O}(W \cdot H \cdot r)$：
+        </p>
+        
+        <div class="math-step">
+            <span class="step-label">Step 1: 1D Horizontal Erosion (X 軸侵蝕 - 尋找局部極暗點)</span>
+            <div class="math-block">$$E_x(x, y) = \min_{k \in [-r, r]} f(x+k, y)$$</div>
+        </div>
+        
+        <div class="math-step">
+            <span class="step-label">Step 2: 1D Vertical Erosion (Y 軸侵蝕 - 補齊 2D 侵蝕)</span>
+            <div class="math-block">$$E_{xy}(x, y) = \min_{k \in [-r, r]} E_x(x, y+k)$$</div>
+        </div>
+        
+        <div class="math-step">
+            <span class="step-label">Step 3: 1D Horizontal Dilation (X 軸膨脹 - 恢復波段邊界)</span>
+            <div class="math-block">$$D_x(x, y) = \max_{k \in [-r, r]} E_{xy}(x+k, y)$$</div>
+        </div>
+        
+        <div class="math-step">
+            <span class="step-label">Step 4: 1D Vertical Dilation (Y 軸膨脹 - 建立最終背景基線)</span>
+            <div class="math-block">$$Bg(x, y) = \max_{k \in [-r, r]} D_x(x, y+k)$$</div>
+        </div>
+        
+        <div class="math-final">
+            Final Subtraction: $\quad f_{out}(x, y) = \max(0, f(x, y) - Bg(x, y))$
+        </div>
+    </div>
+</details>
+
+                        <h4>3. Logarithmic Mapping 對數空間映射</h4>
+                        <ul>
+                            <li>將浮點線性強度非線性地映射至視覺 RGBA 空間以突顯極弱訊號（僅影響渲染，不污染定量數據）。常數 $C$ 確保輸出落於 0~255 區間：</li>
+                        </ul>
+                        <div class="math-block">$$V_{out} = C \cdot \ln(1 + V_{in})$$</div>
+
+                        <h4>4. Hysteresis Thresholding & BFS 雙閾值水流蔓延</h4>
+                        <ul>
+                            <li>系統揚棄了傳統極易造成斷層的單一全局閾值 (Global Thresholding)，改採高容錯的<strong>雙閾值遲滯掃描 (Hysteresis Thresholding)</strong> 配合廣度優先搜尋 (BFS) 進行波段蔓延。</li>
+                            <li>為因應極端弱訊號與高強訊號在視覺上的落差，滑桿與底層真實物理強度的映射加入了<strong>非線性 Gamma 權重 ($\gamma$)</strong>，確保在低強度區域具備極高的微調解析度。</li>
+                        </ul>
+
+                        <details class="math-collapse">
+                            <summary>
+                                <div class="math-summary-content">
+                                    <span class="math-title">Non-linear Hysteresis BFS Growth</span>
+                                    <span class="math-preview">$Seed \rightarrow Expand(I \ge T_{boundary})$</span>
+                                </div>
+                                <span class="expand-indicator"></span>
+                            </summary>
+                            <div class="math-collapse-body">
+                                <p style="font-size: 0.9em; color: #6c757d; margin-top: 0; line-height: 1.5;">
+                                    傳統演算法容易因單一閾值過高而丟失弱波段邊緣，或因閾值過低導致相鄰波段相互融合。系統定義了高強度的 <strong>Core (種子)</strong> 與低強度的 <strong>Boundary (擴張底線)</strong>，從種子出發向外蔓延，完美兼顧強訊號的定位與弱邊緣的保留。
+                                </p>
+                                
+                                <div class="math-step">
+                                    <span class="step-label">Step 1: Non-linear Intensity Mapping (非線性物理強度映射)</span>
+                                    <p style="font-size: 0.85em; color: #6c757d; margin: 5px 0 10px 0; text-align: center;">將 UI 滑桿百分比 $P_{ui}$ 透過 $\gamma$ (Linearity Scale, 預設 2.5) 映射回真實物理閾值 $T$：</p>
+                                    <div class="math-block">$$T = I_{max} \cdot \left(\frac{P_{ui}}{100}\right)^{\frac{1}{\gamma}}$$</div>
+                                </div>
+                                
+                                <div class="math-step">
+                                    <span class="step-label">Step 2: Seed Initialization (核心種子篩選)</span>
+                                    <p style="font-size: 0.85em; color: #6c757d; margin: 5px 0 10px 0; text-align: center;">尋找影像中強度大於等於 Core 閾值的所有像素作為水流源頭：</p>
+                                    <div class="math-block">$$S = \{ p \in Image \mid I(p) \ge T_{core} \}$$</div>
+                                </div>
+
+                                <div class="math-step">
+                                    <span class="step-label">Step 3: BFS Hysteresis Expansion (雙閾值水流蔓延)</span>
+                                    <p style="font-size: 0.85em; color: #6c757d; margin: 5px 0 10px 0; text-align: center;">從種子 $S$ 出發，向外遞迴擴張至周邊 8 鄰域像素 $p_{adj}$，直到強度低於 Boundary：</p>
+                                    <div class="math-block">$$Expand(p_{adj}) \iff I(p_{adj}) \ge T_{boundary}$$</div>
+                                </div>
+                                
+                                <div class="math-step" style="border-top: 1px dashed #dee2e6; margin-top: 20px; padding-top: 15px;">
+                                    <span class="step-label" style="border-left-color: #28a745; color: #28a745;">※ Automated Statistical Guess (動態起始邊界估算)</span>
+                                    <p style="font-size: 0.85em; color: #6c757d; margin: 5px 0 10px 0; text-align: center;">首次點擊分析時，系統自動擷取有效像素之平均值 $\mu$ 與標準差 $\sigma$，推算統計學最佳起始滑桿位置：</p>
+                                    <div class="math-block">$$T_{auto\_start} = \mu + 0.5\sigma$$</div>
+                                </div>
+                                
+                            </div>
+                        </details>
+
+                        <h4>5. 1D Intensity-Projected Watershed 訊號降維切割</h4>
+                        <ul>
+                            <li>針對肉眼可見但傳統演算法難以切分的沾黏波段 (Fusion Blobs)，系統引入降維地形學，將 2D 強度沿 Y 軸投影為 1D 光譜進行降噪與波谷切割。</li>
+                            <li>切割後「🪄 Magic Wand」套用專屬的<strong>強度對稱裁切 (Intensity-Symmetric Trimming)</strong> 技術，完美解決分水嶺切割後，朝向背景端產生過度蔓延的不對稱拖尾現象。</li>
+                        </ul>
+
+                        <details class="math-collapse">
+                            <summary>
+                                <div class="math-summary-content">
+                                    <span class="math-title">1D Spectral Projection & Symmetric Trimming</span>
+                                    <span class="math-preview">$Trim \iff I_{profile}(y) \ge T_{sym}$</span>
+                                </div>
+                                <span class="expand-indicator"></span>
+                            </summary>
+                            <div class="math-collapse-body">
+                                <div class="math-step">
+                                    <span class="step-label">Step 1: 1D Spectral Projection & Smoothing (一維光譜投影與降噪)</span>
+                                    <p style="font-size: 0.85em; color: #6c757d; margin: 5px 0 10px 0; text-align: center;">面對沾黏波段 (Blob Fusion)，沿 Y 軸將 2D 像素群投影為 1D 光譜 $P(y)$，並套用高斯平滑核 (Gaussian Kernel) 進行深度降噪：</p>
+                                    <div class="math-block">$$S(y) = \sum_{k=-2}^{2} P(y+k) \cdot W(k+2) \quad \text{where } W = [0.05, 0.25, 0.40, 0.25, 0.05]$$</div>
+                                </div>
+                                
+                                <div class="math-step">
+                                    <span class="step-label">Step 2: Valley Detection (波谷深度檢測)</span>
+                                    <p style="font-size: 0.85em; color: #6c757d; margin: 5px 0 10px 0; text-align: center;">尋找 1D 光譜的波谷作為切割線。波谷的相對深度必須嚴格大於相鄰波峰的 $5\%$，才會被判定為有效的分水嶺：</p>
+                                    <div class="math-block">$$\frac{\min(Peak_1, Peak_2) - Valley_{min}}{\min(Peak_1, Peak_2)} > 0.05$$</div>
+                                </div>
+                                
+                                <div class="math-step">
+                                    <span class="step-label">Step 3: Intensity-Symmetric Trimming (強度對稱裁切)</span>
+                                    <p style="font-size: 0.85em; color: #6c757d; margin: 5px 0 10px 0; text-align: center;">為解決弱訊號被 Watershed 切割後，朝向背景端產生過度蔓延的不對稱「拖尾」現象。系統抓取波段上下邊緣的最高強度，計算對稱閾值並由波峰向外重新執行精準裁切：</p>
+                                    <div class="math-block">$$T_{sym} = \max(I_{top}, I_{bottom}) \times 0.95$$</div>
+                                    <div class="math-block">$$Trim \iff I_{profile}(y) \ge T_{sym}$$</div>
+                                </div>
+                            </div>
+                        </details>
+
+                        <h4>6. Auto HDR: Maximally Stable Extremal Regions (MSER) 拓撲掃描演算法</h4>
+                        <ul>
+                            <li>系統內建自動化 <strong>MSER (最大穩定極值區域)</strong> 演算法。透過模擬「水位下降（閾值遞減）」，在多層級的拓撲結構中尋找面積變化率趨近於零的「完美收斂高原期」。</li>
+                            <li>結合主執行緒的狀態機記憶與 Web Worker 的平行運算，達成無需人工干預的 Auto HDR 訊號捕捉。</li>
+                        </ul>
+
+                        <details class="math-collapse">
+                            <summary>
+                                <div class="math-summary-content">
+                                    <span class="math-title">MSER Topographical Sweep & Phase 3 Rescue</span>
+                                    <span class="math-preview">$\arg\min \frac{\Delta Area}{Area} \ \ \forall T \in [T_{start}, T_{end}]$</span>
+                                </div>
+                                <span class="expand-indicator"></span>
+                            </summary>
+                            <div class="math-collapse-body">
+                                <p style="font-size: 0.9em; color: #6c757d; margin-top: 0; line-height: 1.5;">
+                                    Auto HDR 透過自動迭代雙閾值 BFS 演算法，追蹤每個波段在不同閾值下的拓撲衍生歷史 (Lineage)，以數學導數尋找最穩定的物理邊界。
+                                </p>
+                                
+                                <div class="math-step">
+                                    <span class="step-label">Step 1: Threshold Descent (水位下降迭代)</span>
+                                    <p style="font-size: 0.85em; color: #6c757d; margin: 5px 0 10px 0; text-align: center;">從使用者定義的高強度起點向下掃描至雜訊底線，步進值為 $\Delta T$：</p>
+                                    <div class="math-block">$$T_i = T_{start} - i \cdot \Delta T \quad \text{for } T_i \ge T_{end}$$</div>
+                                </div>
+                                
+                                <div class="math-step">
+                                    <span class="step-label">Step 2: Stability Criterion & Forgiving Cache (穩定度評估與寬容快取狀態機)</span>
+                                    <p style="font-size: 0.85em; color: #6c757d; margin: 5px 0 10px 0; text-align: center;">計算波段在相鄰閾值間的面積成長率 $\Delta(T_i)$。系統揚棄死守絕對極小值的傳統做法，建立「寬容快取狀態機 (Forgiving State Machine)」，若成長率極低 ($\le 12\%$) 或起伏未偏離歷史最佳狀態太多 ($+8\%$ 內)，即視為達到拓撲高原期 (Plateau)，系統將自動快取此最佳狀態，允許波段貪婪地完美收斂：</p>
+                                    <div class="math-block">$$\Delta(T_i) = \frac{Area(T_{i}) - Area(T_{i-1})}{Area(T_{i-1})}$$</div>
+                                    <div class="math-block" style="font-size: 0.9em;">$$Update \ Cache_{plateau} \iff \Delta(T_i) &lt; 0.12 \ \lor \ (\Delta(T_i) \le \Delta_{best} + 0.08 \ \land \ \Delta(T_i) &lt; 0.25)$$</div>
+                                </div>
+
+                                <div class="math-step">
+                                    <span class="step-label">Step 3: Adaptive Morphological Descent (Phase 3 適應性打撈)</span>
+                                    <p style="font-size: 0.85em; color: #6c757d; margin: 5px 0 10px 0; text-align: center;">針對沉沒於底層雜訊中的極弱訊號，系統會萃取已成功收斂波段的「形態學」($W_{ref}, H_{ref}$)，並套用<strong>高張力邊界比例 ($\rho = 0.85$)</strong> 進行弱訊號強制剝離，同時避免雜訊沾黏：</p>
+                                    <div class="math-block">$$T_{boundary} = \max(T_{end}, \ T_{core} \times 0.85)$$</div>
+                                    <div class="math-block">$$Rescue \iff (W_{new} \approx W_{ref}) \land (H_{new} \approx H_{ref}) \land \text{No Collision}$$</div>
+                                </div>
+                            </div>
+                        </details>
+                            
+                        <h4>7. Magic Wand: Log-Driven BFS 魔術棒局部對數空間蔓延</h4>
+                        <ul>
+                            <li>面對極端微弱且被背景雜訊淹沒的訊號，線性水流極易引發全局溢流。系統於主執行緒實作了<strong>局部對數空間廣度優先搜尋 (Log-Driven BFS)</strong>，以達成零延遲互動。</li>
+                            <li>此模式將線性強度轉化為對數空間以放大暗部特徵，同時結合<strong>泳道物理箝制 (Lane Clamping)</strong>，確保水流蔓延絕不越界至相鄰泳道。</li>
+                        </ul>
+
+                        <details class="math-collapse">
+                            <summary>
+                                <div class="math-summary-content">
+                                    <span class="math-title">Log-Driven BFS with Dynamic Lane Clamping</span>
+                                    <span class="math-preview">$Expand(p) \iff \ln(1+I_{adj}) \ge 0.55 \cdot Seed_{log}$</span>
+                                </div>
+                                <span class="expand-indicator"></span>
+                            </summary>
+                            <div class="math-collapse-body">
+                                <p style="font-size: 0.9em; color: #6c757d; margin-top: 0; line-height: 1.5;">
+                                    在極低訊號雜訊比 (SNR) 的情況下，線性閾值往往會失效。 🪄 Magic Wand 模式能動態建立局部泳道限制視窗，將浮點訊號映射至非線性對數空間放大微細特徵，使 BFS 能在充滿雜訊的背景中執行高強度的封閉式探測，最後透過 1D Watershed 與 Intensity-Symmetric Trimming 精準剝離出符合物理特徵的蛋白質訊號。
+                                </p>
+                                
+                                <div class="math-step">
+                                    <span class="step-label">Step 1: Dynamic Lane Clamping (動態泳道物理鉗制)</span>
+                                    <p style="font-size: 0.85em; color: #6c757d; margin: 5px 0 10px 0; text-align: center;">提取全域拓撲寬度的中位數 $W_{ref}$，以使用者點擊座標 $x_{click}$ 為中心，建立絕對禁止越界的 X 軸物理防禦牆：</p>
+                                    <div class="math-block">$$X_{lane} = \left[ x_{click} - \frac{W_{ref}}{2}, \ x_{click} + \frac{W_{ref}}{2} \right]$$</div>
+                                </div>
+                                
+                                <div class="math-step">
+                                    <span class="step-label">Step 2: Seed-Centric Peak Detection (局部對數尋峰)</span>
+                                    <p style="font-size: 0.85em; color: #6c757d; margin: 5px 0 10px 0; text-align: center;">在受泳道限制的 $5 \times 5$ 微型視窗內，尋找對數空間中的局部極大值 $L_{max}$ 作為水流源頭：</p>
+                                    <div class="math-block">$$Seed_{log} = \max_{p \in W_{5 \times 5}} \ln(1 + I_{linear}(p))$$</div>
+                                </div>
+
+                                <div class="math-step">
+                                    <span class="step-label">Step 3: Log-Driven Expansion (對數驅動蔓延)</span>
+                                    <p style="font-size: 0.85em; color: #6c757d; margin: 5px 0 10px 0; text-align: center;">從極值點啟動 BFS 水流。僅當相鄰像素的對數強度大於等於極值的 55% 時，才允許擴張，藉此強行剝離漸層光暈：</p>
+                                    <div class="math-block">$$Expand(p_{adj}) \iff \ln(1 + I_{linear}(p_{adj})) \ge 0.55 \cdot L_{max} \ \land \ x_{adj} \in X_{lane}$$</div>
+                                </div>
+                            </div>
+                        </details>
+
+                        <h4>8. Topological QC & Defense Mechanisms 拓撲品管與防禦機制</h4>
+                        <ul>
+                            <li>無論是局部打撈 (Magic Wand) 或全域掃描 (Auto HDR)，水流蔓延後擷取到的物件 (Blobs) 均需通過嚴格的幾何特徵與拓撲審查，以剔除數位雜訊、光暈殘骸與過度分割之偽影。</li>
+                        </ul>
+
+                        <details class="math-collapse">
+                            <summary>
+                                <div class="math-summary-content">
+                                    <span class="math-title">🪄 Magic Wand Isolation QC</span>
+                                    <span class="math-preview">$QC_{wand}(Blob) \iff Width \ \land \ Intent \ \land \ Solidity$</span>
+                                </div>
+                                <span class="expand-indicator"></span>
+                            </summary>
+                            <div class="math-collapse-body">
+                                <div class="math-step">
+                                    <span class="step-label">Step 1: Dynamic Width Reference (動態寬度基準萃取)</span>
+                                    <p style="font-size: 0.85em; color: #6c757d; margin: 5px 0 10px 0; text-align: center;">萃取畫面上已建立拓撲之波段寬度的中位數，做為物理寬度的審查基準 $W_{ref}$，並限制水流不可蔓延超出該泳道邊界：</p>
+                                    <div class="math-block">$$W_{ref} = \text{Median}( \{ W_{blob} \mid \forall blob \in Topology \} )$$</div>
+                                    <div class="math-block">$$QC_{width} \iff 0.4 W_{ref} \le W_{wand} \le 1.6 W_{ref}$$</div>
+                                </div>
+                                
+                                <div class="math-step">
+                                    <span class="step-label">Step 2: Intent Retention (意圖鎖定過濾)</span>
+                                    <p style="font-size: 0.85em; color: #6c757d; margin: 5px 0 10px 0; text-align: center;">當 1D Watershed 切割連體波段時，僅保留「包含使用者最初點擊座標 $P_{click}$」的子波段，捨棄其餘受牽連之殘骸：</p>
+                                    <div class="math-block">$$QC_{intent} \iff P_{click} \in Blob_{sub}$$</div>
+                                </div>
+
+                                <div class="math-step">
+                                    <span class="step-label">Step 3: Solidity & Shape QC (實心度與像素下限防護)</span>
+                                    <p style="font-size: 0.85em; color: #6c757d; margin: 5px 0 10px 0; text-align: center;">防止空心的幽靈雜訊或微小灰塵被判定為有效波段：</p>
+                                    <div class="math-block">$$Solidity = \frac{Area_{pixels}}{W_{wand} \times H_{wand}}$$</div>
+                                    <div class="math-block">$$QC_{shape} \iff Solidity \ge 0.05 \ \land \ Area_{pixels} > 8$$</div>
+                                </div>
+                            </div>
+                        </details>
+
+                        <details class="math-collapse">
+                            <summary>
+                                <div class="math-summary-content">
+                                    <span class="math-title">✨ Auto HDR / MSER Topographical Defense</span>
+                                    <span class="math-preview">$\text{Four-Shield Defense} \ \land \ \text{Global Feature QC}$</span>
+                                </div>
+                                <span class="expand-indicator"></span>
+                            </summary>
+                            <div class="math-collapse-body">
+                                <div class="math-step">
+                                    <span class="step-label">Step 1: Parent-Centric Evaluation (四大防護審查)</span>
+                                    <p style="font-size: 0.85em; color: #6c757d; margin: 5px 0 10px 0; text-align: center;">監控波段在閾值下降時的增長率 $\Delta$。若觸發以下任一溢流條件或實體排斥，系統將立即阻斷擴張並回退至歷史最佳快取：</p>
+                                    <ul style="font-size: 0.85em; background: #fff; padding: 10px 10px 10px 30px; border: 1px solid #dee2e6; border-radius: 6px;">
+                                        <li><strong>Area Spill (面積暴增)：</strong> $\Delta Area > Threshold_{spill}$</li>
+                                        <li><strong>Width Spill (左右融合)：</strong> 實際變寬 $>5px$ 且 $\Delta Width > 70\%$</li>
+                                        <li><strong>Height Spill (上下吞噬)：</strong> 實際變高 $>4px$ 且 $\Delta Height > 40\%$</li>
+                                        <li><strong>AABB Collision (實體排斥)：</strong> 邊界框觸碰已鎖定之波段 (維持 1px 社交距離)</li>
+                                    </ul>
+                                </div>
+                                
+                                <div class="math-step">
+                                    <span class="step-label">Step 2: Forgiving Plateau Tracking (寬容高原期快取)</span>
+                                    <p style="font-size: 0.85em; color: #6c757d; margin: 5px 0 10px 0; text-align: center;">不盲目鎖定絕對最低成長率，若 $\Delta Area &lt; 12\%$ 或僅微幅波動，視為安全高原期並持續更新快取，允許波段「貪婪地完美收斂」。</p>
+                                </div>
+
+                                <div class="math-step">
+                                    <span class="step-label">Step 3: Global Feature QC (基於全域母體的中位數特徵過濾)</span>
+                                    <p style="font-size: 0.85em; color: #6c757d; margin: 5px 0 10px 0; text-align: center;">掃描結束後，統整畫面上所有波段之寬高分佈，推算動態物理上下限，精準剔除偽影：</p>
+                                    <ul style="font-size: 0.85em; background: #fff; padding: 10px 10px 10px 30px; border: 1px solid #dee2e6; border-radius: 6px;">
+                                        <li><strong>Vertical Artifact (垂直殘影)：</strong> 高度 $> \text{寬度} \times 3$</li>
+                                        <li><strong>Scanner Scratch (掃描器刮痕)：</strong> 寬度 $> \text{高度} \times 15$</li>
+                                        <li><strong>Ghost Shape (空心幽靈雜訊)：</strong> 實心度 &lt; 0.02 且面積過小</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </details>
+
+                        <h4>9. Multiplex IFD & Multi-File Spatial Alignment 多通道與多檔空間對齊</h4>
+                        <ul>
+                            <li>針對現代西方墨點法 (如 Li-COR 雙色螢光) 或不同曝光時間之多檔疊加需求，系統內建<strong>非同步解析佇列 (Async Multi-File Queue)</strong>，能將多重 IFD 圖層或獨立圖檔疊合成統一的專案通道 (Channels)。</li>
+                            <li>切換通道時觸發<strong>實體框線狀態保留 (Persistent ROI State)</strong>，確保不同圖層間的定量區域於物理座標上絕對對齊，達成精準的跨通道比值計算。</li>
+                        </ul>
+
+                        <details class="math-collapse">
+                            <summary>
+                                <div class="math-summary-content">
+                                    <span class="math-title">Multiplex Spatial Alignment</span>
+                                    <span class="math-preview">$ROI_{CH1}(x,y) \equiv ROI_{CH2}(x,y)$</span>
+                                </div>
+                                <span class="expand-indicator"></span>
+                            </summary>
+                            <div class="math-collapse-body">
+                                <div class="math-step">
+                                    <span class="step-label">Step 1: Multiplex IFD Heuristics (多通道特徵啟發式過濾)</span>
+                                    <p style="font-size: 0.85em; color: #6c757d; margin: 5px 0 10px 0; text-align: center;">自動過濾 TIFF 內的低解析度縮圖，嚴格鎖定最大面積的實體圖層作為有效的螢光通道：</p>
+                                    <div class="math-block">$$Channel_{valid} = \{ ifd \in TIFF \mid Area(ifd) = \max(Area) \}$$</div>
+                                </div>
+                                
+                                <div class="math-step">
+                                    <span class="step-label">Step 2: Cross-Channel Persistent ROI (跨通道物理座標鎖定)</span>
+                                    <p style="font-size: 0.85em; color: #6c757d; margin: 5px 0 10px 0; text-align: center;">在圖層切換的瞬間，清空數學拓撲與運算狀態，但強制保留並重繪實體幾何邊界框，確保 $CH_1$ 與 $CH_2$ 在數學矩陣上的擷取位置達到像素級 ($1 \times 1 \ px$) 的絕對物理對齊。</p>
+                                </div>
+                            </div>
+                        </details>
+
+                        <h4>10. Double Normalization Fold Change 雙重正規化生統架構</h4>
+                        <ul>
+                            <li><strong>內部對照組正規化：</strong>提取 Housekeeping Protein 同一泳道內總面積作為分母，消除轉漬效率誤差：</li>
+                        </ul>
+                        <div class="math-block">$$Normalized\_Val = \frac{Intra\_Base\_Value}{Control\_ROI\_Total\_Area}$$</div>
+                        <ul>
+                            <li><strong>實驗對照組正規化：</strong>將特定泳道設為基準 1.0，執行第二次相除得出最終 Fold Change：</li>
+                        </ul>
+                        <div class="math-block">$$Final\_Ratio = \frac{Normalized\_Val_{Target\_Lane}}{Normalized\_Val_{Reference\_Lane}}$$</div>
+
+                        
+                    </div>
+                </details>
+
+                <details class="methodology-section">
+                    <summary>
+                        <h3>3. Operational Flow 操作流程</h3>
+                        <span class="toggle-icon"></span>
+                    </summary>
+                    <div class="details-content">
+                        <ul>
+                            <li><strong>I/O, Identity & Multiplexing：</strong>支援<strong>多檔堆疊 (Multi-File Stacking)</strong> 與多通道 TIFF 匯入。系統為每個獨立檔案生成專屬 SHA-256 數位指紋確保絕對溯源。支援動態圖層切換以進行同座標擷取。</li>
+                            <li><strong>Spatial Definition：</strong>啟動裁切模式鎖定區域，調整傾角與微笑變形進行矩陣校正。</li>
+                            <li><strong>Analysis & Extraction：</strong>支援三軌並行。
+                                <ul>
+                                    <li><b>常規處理</b>：點擊「▶ 𝓓ynamic Analysis」，動態微調背景半徑與 HDR 雙向滑桿尋找訊號</li>
+                                    <li><b>自動模式</b>：點擊「✨ Auto HDR」自動執行 MSER 降維掃描與收網</li>
+                                    <li><b>局部打撈</b>：開啟「🪄 Magic Wand」點擊極弱訊號，進行對數空間強制剝離</li>
+                                </ul>
+                            </li>
+                            <li><strong>Data Locking：</strong>檢視紅色 Blob，點擊轉為藍色上鎖，系統於底層建立物理防禦牆 (masterLockMap) 防止水流溢流。</li>
+                            <li><strong>Biostats & Export：</strong>設定雙重正規化後將數據存入總表，並支援匯出 CSV、PNG、GLP PDF (含 Immutable Audit Trail) 及 加密簽章 <code>.aq</code> 專案檔。</li>
+                        </ul>
+                    </div>
+                </details>
+
+                <details class="methodology-section">
+                    <summary>
+                        <h3>4. Computational Pipeline 運算流程</h3>
+                        <span class="toggle-icon"></span>
+                    </summary>
+                    <div class="details-content">
+                        <p style="margin-top: 0; color: #6c757d; font-size: 0.9em;">系統於背景 Web Worker 中執行非同步運算，與 Main Thread 進行高度協作與平行化資料流處理。</p>
+                        <ul>
+                            <li><strong>A. Transient Decoding & Multiplex Queue 瞬態解碼與佇列 [Decode Worker]</strong>
+                                <ul>
+                                    <li>主執行緒建構非同步 Promise 佇列，依序將圖檔派發給動態生成的 Decode Worker。</li>
+                                    <li>執行 Multiplex IFD 啟發式過濾，解碼後透過 Zero-Copy 傳遞 Float32 陣列。</li>
+                                    <li>觸發 <code>worker.terminate()</code> 瞬間斬斷執行緒，強制 V8 引擎釋放所有解碼記憶體。</li>
+                                </ul>
+                            </li>
+                            <li><strong>B. Memory Prep & Data Binding 記憶體準備與雙向通訊 [Main Thread]</strong>
+                                <ul>
+                                    <li>使用者切換通道或圈選 ROI 後，主執行緒提取目標子矩陣並傳送至 Math Worker。</li>
+                                    <li>建立 Ping-Pong Buffers 準備承接即時拖曳與參數微調的高頻回傳結果。</li>
+                                </ul>
+                            </li>
+                            <li><strong>C. Background & Geometry 幾何校正與背景處理 [Math Worker]</strong>
+                                <ul>
+                                    <li>執行 Quadratic Warp 矩陣重映射 (剛性旋轉與非對稱二階多項式微笑校正)</li>
+                                    <li>執行 90% Robust Percentile 投影推算波段厚度，執行動態降採樣背景扣除</li>
+                                </ul>
+                            </li>
+                            <li><strong>D. Topology & Cleaving 訊號拓撲掃描與降維切割</strong>
+                                <ul>
+                                    <li><b>Mode 1: 常規動態微調 [Worker]</b>
+                                        <ul>
+                                            <li>執行 Hysteresis BFS 雙閾值水流蔓延，避開實體防禦牆</li>
+                                            <li>遇到 Fusion Blob 觸發 1D Watershed 降維切割</li>
+                                            <li>執行 Logarithmic Mapping，回傳陣列至 Main Thread</li>
+                                        </ul>
+                                    </li>
+                                    <li><b>Mode 2: Magic Wand 局部對數空間 BFS [Main Thread]</b>
+                                        <ul>
+                                            <li>讀取 Ping-Pong Buffer，動態寬度 QC 基準萃取</li>
+                                            <li>將局部線性強度映射至對數空間進行水流蔓延</li>
+                                            <li>執行 1D Watershed + 強度對稱裁切，保留質心 Blob</li>
+                                        </ul>
+                                    </li>
+                                    <li><b>Mode 3: Auto HDR (MSER) 異步協作 [Main Thread 狀態機 / Worker 迭代]</b>
+                                        <ul>
+                                            <li><strong>Zero-Latency Promise Hook：</strong> 摒棄傳統 <code>setInterval</code> 輪詢，主執行緒透過動態注入 <code>window.autoHdrResolveHook</code> 精準攔截 Worker 的 <code>postMessage</code> 回傳，實現 $\approx 0ms$ 延遲的極速雙向遞迴運算。</li>
+                                            <li><strong>掃描與狀態機評估 (Sweep & Evaluate)：</strong> 執行高密度水位下降掃描，於主執行緒維護各波段的生命週期狀態機 (State Machine)，動態評估「四大防護」與 $\Delta Area$ 寬容高原期，避免局部最佳解陷阱。</li>
+                                            <li><strong>觸底收網與 Phase 3 打撈：</strong> 掃描觸底後執行 End-of-Sweep Flush 強制收網，隨後啟動 Phase 3，利用成功波段的形態學 ($W_{ref}, H_{ref}$) 深入雜訊底層，以 $\rho=0.85$ 的高張力閾值進行強制剝離。</li>
+                                            <li><strong>幾何邊界淨化 (Geometric Crop)：</strong> 最終疊加交集對最小面積比 (IoM) 與 Bounding Crop 雙重過濾，精準刪除因非線性變形或剛性旋轉而超出原始 ROI 邊界的冗餘殘骸。</li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li><strong>E. Assembly & Virtualization 組裝與虛擬化渲染</strong>
+                                <ul>
+                                    <li>執行交集對最小面積比 (IoM) 疊加過濾器剔除光暈殘骸</li>
+                                    <li>動態泳道分群 (Dynamic Lane Grouping) 並寫入 imgCanvas</li>
+                                    <li>觸發 Virtual DOM 表格重繪與雙重正規化生統運算</li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                </details>
+
+            </div>
+        </div>
+    </div>
+
+<script type="module" src="/src/main.js"></script>
+
+
+</body>
+</html>

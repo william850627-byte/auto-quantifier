@@ -1,0 +1,660 @@
+:root {
+    --primary: #0d6efd; 
+    --primary-hover: #0b5ed7;
+    --success: #198754; 
+    --success-hover: #157347;
+    --warning: #ffc107; 
+    --warning-hover: #e0a800;
+    --danger: #dc3545;  
+    --danger-hover: #c82333;
+    --saved-bg: #e8f5e9; 
+    --bg-body: #e9ecef; 
+    --bg-panel: #ffffff;
+    --border-color: #dee2e6;
+    --text-main: #212529; 
+    --text-muted: #6c757d;
+}
+
+/* --- 基礎佈局 --- */
+body { 
+    margin: 0; 
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+    background-color: var(--bg-body); 
+    color: var(--text-main); 
+    height: 100vh; 
+    display: flex; 
+    flex-direction: column; 
+    overflow: hidden; 
+}
+
+header { 
+    flex-shrink: 0; 
+    background: var(--bg-panel); 
+    padding: 10px 24px; 
+    border-bottom: 1px solid var(--border-color); 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05); 
+    z-index: 10; 
+}
+
+header h2 { 
+    margin: 0; 
+    font-size: 1.2em; 
+    display: flex; 
+    align-items: center; 
+    gap: 10px; 
+}
+
+.version-tag { 
+    color: var(--text-muted); 
+    font-size: 0.7em; 
+    font-family: monospace; 
+    background: #f8f9fa; 
+    padding: 2px 6px; 
+    border-radius: 4px; 
+    border: 1px solid #ddd; 
+}
+
+.header-badges { display: flex; gap: 10px; }
+.badge { 
+    padding: 5px 12px; 
+    border-radius: 20px; 
+    font-size: 0.8em; 
+    font-weight: bold; 
+    color: white; 
+    transition: all 0.3s ease; 
+}
+.badge-gray { background-color: var(--text-muted); }
+.badge-blue { background-color: var(--primary); }
+.badge-red { background-color: var(--danger); }
+.badge-green { background-color: var(--success); }
+.badge-dark { background-color: #343a40; } 
+
+.processing { 
+    background-color: var(--danger); 
+    animation: pulse 1s infinite; 
+}
+@keyframes pulse { 
+    0% { opacity: 1; } 
+    50% { opacity: 0.5; } 
+    100% { opacity: 1; } 
+}
+
+.app-container { 
+    flex-grow: 1; 
+    display: flex; 
+    overflow: hidden; 
+}
+
+/* --- 側邊欄與控制面板 --- */
+.sidebar { 
+    width: 360px; 
+    flex-shrink: 0; 
+    background: var(--bg-panel); 
+    border-right: 1px solid var(--border-color); 
+    display: flex; 
+    flex-direction: column; 
+    overflow-y: auto; 
+    z-index: 5; 
+}
+
+.sidebar-content { 
+    padding: 20px; 
+    display: flex; 
+    flex-direction: column; 
+    gap: 15px; 
+}
+
+.control-card { 
+    background: #f8f9fa; 
+    padding: 15px; 
+    border-radius: 8px; 
+    border: 1px solid var(--border-color); 
+}
+
+.control-card label { 
+    font-weight: 600; 
+    font-size: 0.9em; 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    margin-bottom: 8px; 
+}
+
+.val-display { 
+    color: var(--primary); 
+    font-family: monospace; 
+    font-size: 1.1em; 
+}
+
+.hint-text { 
+    font-size: 0.75em; 
+    color: var(--text-muted); 
+    display: block; 
+    line-height: 1.4; 
+    margin-bottom: 5px; 
+}
+
+input[type="file"] { width: 100%; font-size: 0.85em; cursor: pointer; }
+input[type="range"] { width: 100%; cursor: pointer; margin-top: 5px; }
+
+/* --- 按鈕樣式 --- */
+.btn { 
+    border: none; 
+    padding: 10px 12px; 
+    font-size: 0.9em; 
+    border-radius: 6px; 
+    cursor: pointer; 
+    font-weight: bold; 
+    transition: all 0.2s; 
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1); 
+    display: inline-flex; 
+    align-items: center; 
+    justify-content: center; 
+    gap: 6px; 
+}
+.btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none !important; box-shadow: none !important; }
+.btn:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 4px 6px rgba(0,0,0,0.15); }
+
+.btn-crop { background-color: var(--warning); color: #000; padding: 4px 10px; font-size: 0.8em; }
+.btn-analyze { background-color: var(--warning); color: #000; width: 100%; grid-column: span 2; font-size: 1em; padding: 12px; }
+.btn-save { background-color: var(--success); color: white; width: 100%; }
+.btn-export { background-color: var(--primary); color: white; width: 100%; }
+.btn-reset { background-color: var(--danger); color: white; width: 100%; }
+.btn-export-img { background-color: #6f42c1; color: white; width: 100%; }
+
+.action-group { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 5px; }
+
+/* --- 模式標語 --- */
+.mode-banner { 
+    text-align: center; 
+    padding: 10px; 
+    background: #e9ecef; 
+    border-radius: 6px; 
+    font-weight: bold; 
+    font-size: 0.9em; 
+    color: #495057; 
+    transition: all 0.3s; 
+    margin-bottom: 10px; 
+    border: 2px solid transparent; 
+}
+.mode-banner.active-crop { background: #fff3cd; color: #856404; border-color: #ffeeba; }
+
+/* --- 主工作區與畫布 --- */
+.workspace { 
+    flex-grow: 1; 
+    display: flex; 
+    flex-direction: column; 
+    padding: 15px; 
+    gap: 8px; 
+    overflow: hidden; 
+}
+
+.resizer { 
+    height: 6px; 
+    background-color: var(--border-color); 
+    cursor: row-resize; 
+    border-radius: 3px; 
+    flex-shrink: 0; 
+    transition: background-color 0.2s, transform 0.2s; 
+    z-index: 20; 
+    position: relative;
+}
+.resizer::before { content: ''; position: absolute; top: -15px; bottom: -15px; left: 0; right: 0; z-index: 21; }
+.resizer:hover, .resizer.active { background-color: var(--primary); transform: scaleY(1.5); }
+
+.canvas-section { 
+    flex-grow: 1; 
+    background: var(--bg-panel); 
+    border-radius: 8px; 
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05); 
+    border: 1px solid var(--border-color); 
+    overflow: auto; 
+    position: relative; 
+    display: flex; 
+    align-items: flex-start; 
+    justify-content: center; 
+}
+
+.scroll-spacer { position: relative; margin: 20px auto; }
+.canvas-stack { 
+    position: absolute; 
+    top: 0; 
+    left: 0; 
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2); 
+    border-radius: 4px; 
+    overflow: hidden; 
+    line-height: 0; 
+    transform-origin: top left; 
+    will-change: transform; 
+}
+canvas { display: block; background: transparent; }
+
+/* 【自訂高對比滑鼠圖示】強制使用帶有黑色邊框的純白 SVG 游標，絕對防止在白底膠片中隱形 */
+#overlayCanvas { 
+    position: absolute; top: 0; left: 0; touch-action: none; 
+    /* 張開的手 (Grab) - 附帶黑邊與完美指節 */
+    cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'><path d='M6 18V11.5c0-1.1.9-2 2-2s2 .9 2 2V4.5c0-1.1.9-2 2-2s2 .9 2 2V2.5c0-1.1.9-2 2-2s2 .9 2 2V4.5c0-1.1.9-2 2-2s2 .9 2 2V7.5c0-1.1.9-2 2-2s2 .9 2 2V18c0 4.4-3.6 8-8 8h-4c-4.4 0-8-3.6-8-8Z' fill='%23fff' stroke='%23000' stroke-width='2' stroke-linejoin='round'/><path d='M10 11.5V14M14 4.5V13M18 4.5V14M22 7.5V15' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round'/></svg>") 16 16, grab; 
+}
+#overlayCanvas:active { 
+    /* 抓取的拳頭 (Grabbing) - 附帶黑邊與彎曲指節 */
+    cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'><path d='M6 18V11.5c0-1.1.9-2 2-2s2 .9 2 2c0-1.1.9-2 2-2s2 .9 2 2c0-1.1.9-2 2-2s2 .9 2 2c0-1.1.9-2 2-2s2 .9 2 2V18c0 4.4-3.6 8-8 8h-4c-4.4 0-8-3.6-8-8Z' fill='%23fff' stroke='%23000' stroke-width='2' stroke-linejoin='round'/><path d='M10 11.5V15M14 11.5V15M18 11.5V15M22 11.5V15' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round'/></svg>") 16 16, grabbing; 
+} 
+#uiCanvas { 
+    position: absolute; top: 0; left: 0; 
+    /* 高精度十字準星 (Crosshair) - 實作 4px 黑底線疊加 2px 白線，達成完美的 1px 黑白夾心外框 */
+    cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cline x1='12' y1='0' x2='12' y2='24' stroke='black' stroke-width='4'/%3E%3Cline x1='0' y1='12' x2='24' y2='12' stroke='black' stroke-width='4'/%3E%3Cline x1='12' y1='2' x2='12' y2='22' stroke='white' stroke-width='2'/%3E%3Cline x1='2' y1='12' x2='22' y2='12' stroke='white' stroke-width='2'/%3E%3C/svg%3E") 12 12, crosshair; 
+    pointer-events: none; z-index: 15; touch-action: none; 
+}
+
+/* --- 數據表格區塊 --- */
+.table-section { 
+    flex-basis: 40%; 
+    flex-shrink: 0; 
+    min-height: 100px; 
+    background: var(--bg-panel); 
+    border-radius: 8px; 
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05); 
+    border: 1px solid var(--border-color); 
+    display: flex; 
+    flex-direction: column; 
+    overflow: hidden; 
+}
+
+.table-header { 
+    padding: 12px 20px; 
+    background: #f8f9fa; 
+    border-bottom: 1px solid var(--border-color); 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+}
+.table-header h3 { margin: 0; font-size: 1em; color: var(--text-main); display: flex; align-items: center; gap: 10px; }
+
+.saved-counter { 
+    background: var(--primary); 
+    color: white; 
+    padding: 2px 8px; 
+    border-radius: 12px; 
+    font-size: 0.8em; 
+    font-weight: normal; 
+}
+
+.analysis-toolbar { 
+    padding: 10px 20px; 
+    background: #fdfdfe; 
+    border-bottom: 1px solid var(--border-color); 
+    display: flex; 
+    flex-wrap: wrap; 
+    gap: 15px; 
+    align-items: center; 
+    font-size: 0.85em; 
+    box-shadow: inset 0 -2px 5px rgba(0,0,0,0.02); 
+}
+.analysis-toolbar label { font-weight: 600; color: #495057; display: flex; align-items: center; gap: 5px; }
+.analysis-toolbar select { padding: 4px 8px; border-radius: 4px; border: 1px solid #ced4da; cursor: pointer; font-weight: bold; color: var(--primary); }
+
+.table-scroll { flex-grow: 1; overflow-y: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 0.9em; }
+th, td { border: 1px solid var(--border-color); padding: 8px 12px; text-align: center; }
+th { background-color: #f8f9fa; position: sticky; top: 0; z-index: 10; font-weight: 600; }
+
+.lane-header { background-color: #eef2f5; font-weight: bold; color: var(--primary); }
+.locked-row { background-color: #e8f4fd; } 
+.saved-row { background-color: var(--saved-bg); color: #2e7d32; } 
+.locked-icon { color: var(--primary); font-size: 1.1em; }
+.ratio-val { color: #d63384; font-weight: bold; font-family: monospace; font-size: 1.1em; }
+
+.btn-table-action { background: transparent; border: none; cursor: pointer; font-size: 1.1em; color: var(--danger); padding: 2px 8px; border-radius: 4px; transition: all 0.2s ease; display: inline-flex; align-items: center; justify-content: center; }
+.btn-table-action:hover { background-color: rgba(220, 53, 69, 0.15); transform: scale(1.1); }
+
+#tableBody tr:not(.spacer-row) { height: 38px; }
+.spacer-row { border: none !important; background: transparent !important; }
+.spacer-row td { padding: 0 !important; border: none !important; pointer-events: none; }
+
+[title] { cursor: help; }
+button[title] { cursor: pointer; }
+
+/* --- 捲軸樣式 --- */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #ced4da; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: #adb5bd; }
+
+/* --- 表格亮動效果 --- */
+@keyframes flashHighlight { 
+    0% { background-color: rgba(13, 110, 253, 0.4); } 
+    50% { background-color: rgba(13, 110, 253, 0.1); } 
+    100% { background-color: transparent; } 
+}
+.highlight-flash { animation: flashHighlight 1.5s ease-out forwards; }
+
+/* --- 響應式佈局 (Mobile) --- */
+.mobile-toggle { display: none; background: transparent; border: none; font-size: 1.3em; cursor: pointer; color: var(--text-main); padding: 0 10px; line-height: 1; }
+.sidebar-backdrop { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); z-index: 99; opacity: 0; transition: opacity 0.3s ease; backdrop-filter: blur(2px); }
+.sidebar-backdrop.active { opacity: 1; }
+
+@media (max-width: 768px) {
+    .mobile-toggle { display: inline-flex; align-items: center; gap: 6px; margin-right: 10px; }
+    .header-badges { display: none; } 
+    .sidebar { position: fixed; top: 0; left: -100%; height: 100vh; width: 85%; max-width: 320px; box-shadow: 4px 0 25px rgba(0,0,0,0.3); transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1); z-index: 100; }
+    .sidebar.open { left: 0; } 
+    .sidebar-content { padding: 15px; gap: 10px; }
+    .control-card { padding: 10px 12px; }
+    .control-card label { margin-bottom: 5px; }
+    .workspace { padding: 10px; gap: 5px; }
+    .table-section { min-height: 150px; } 
+}
+
+/* --- 光譜圖面板樣式 (Densitometry Profile Plot) --- */
+.plot-modal {
+    position: fixed; 
+    bottom: -450px; 
+    right: 20px; 
+    width: 650px; 
+    height: 340px;
+    background: rgba(255, 255, 255, 0.95); 
+    backdrop-filter: blur(10px);
+    border-radius: 12px; 
+    box-shadow: 0 -10px 40px rgba(0,0,0,0.15);
+    border: 1px solid var(--border-color); 
+    z-index: 1000;
+    transition: bottom 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    display: flex; 
+    flex-direction: column; 
+    overflow: hidden;
+    will-change: transform;
+}
+.plot-modal.active { bottom: 20px; }
+
+.plot-header {
+    padding: 10px 15px; 
+    background: #f8f9fa; 
+    border-bottom: 1px solid #dee2e6;
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    cursor: move; 
+    user-select: none; 
+    touch-action: none;
+}
+.plot-header h3 { margin: 0; font-size: 1em; color: var(--text-main); }
+.close-plot-btn { background: none; border: none; font-size: 1.2em; cursor: pointer; color: var(--text-muted); }
+.close-plot-btn:hover { color: var(--danger); }
+
+.export-plot-btn { 
+    background: #e9ecef; border: 1px solid #ced4da; font-size: 0.85em; font-weight: bold;
+    cursor: pointer; color: var(--primary); border-radius: 4px; padding: 2px 8px; transition: all 0.2s; 
+}
+.export-plot-btn:hover { background: var(--primary); color: white; border-color: var(--primary); }
+
+.plot-body { 
+    flex-grow: 1; 
+    padding: 10px; 
+    position: relative; 
+    display: flex; 
+    flex-direction: column; 
+    min-height: 0; 
+}
+#profilePlotCanvas { 
+    flex-grow: 1; 
+    width: 100%; 
+    height: 100%; 
+    display: block; 
+    background: #fafafa; 
+    border-radius: 4px; 
+    border: 1px solid #eee; 
+    box-sizing: border-box; 
+    min-height: 0; 
+}
+.plot-legend { 
+    position: absolute; 
+    top: 20px; 
+    right: 25px; 
+    font-size: 0.8em; 
+    background: rgba(255,255,255,0.8); 
+    padding: 8px; 
+    border-radius: 6px; 
+    border: 1px solid #ddd; 
+    line-height: 1.5; 
+    pointer-events: none;
+}
+
+.plot-tooltip {
+    position: absolute;
+    background: rgba(33, 37, 41, 0.85);
+    color: #fff;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-family: monospace;
+    font-size: 12px;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.15s ease;
+    z-index: 10;
+    white-space: nowrap;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    transform: translate(-50%, -100%);
+    margin-top: -10px;
+}
+
+/* --- Auto HDR 專用 UI 樣式 --- */
+.hdr-slider-container { width: 100%; margin: 15px 0 5px 0; user-select: none; }
+.hdr-labels { display: flex; justify-content: space-between; font-size: 0.85em; margin-bottom: 8px; color: #495057; font-weight: bold; }
+.hdr-track { position: relative; width: 100%; height: 6px; background-color: #dee2e6; border-radius: 3px; cursor: pointer; }
+.hdr-range { position: absolute; height: 100%; background-color: var(--primary); border-radius: 3px; cursor: grab; }
+.hdr-range:active { cursor: grabbing; }
+
+/* 游標本體基礎設定 */
+.hdr-thumb { 
+    position: absolute; 
+    top: 50%; 
+    width: 16px; 
+    height: 16px; 
+    background-color: #fff; 
+    border: 2px solid var(--primary); 
+    border-radius: 50%; 
+    transform: translate(-50%, -50%); 
+    cursor: ew-resize; 
+    z-index: 2; 
+    transition: transform 0.1s; 
+}
+.hdr-thumb:hover, .hdr-thumb.is-dragging { transform: translate(-50%, -50%) scale(1.2); }
+
+/* 游標浮動數值框 (純 CSS Tooltip) */
+.hdr-thumb::after {
+    content: attr(data-val); 
+    position: absolute;
+    bottom: 150%;
+    left: 50%;
+    transform: translateX(-50%) translateY(10px) scale(0.8);
+    padding: 3px 6px;
+    border-radius: 4px;
+    color: white;
+    font-size: 11px;
+    font-family: monospace;
+    font-weight: bold;
+    pointer-events: none;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+    box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+}
+
+/* Tooltip 下方的倒三角形指標 */
+.hdr-thumb::before {
+    content: '';
+    position: absolute;
+    bottom: 150%;
+    left: 50%;
+    transform: translateX(-50%) translateY(14px) scale(0.8);
+    border: 4px solid transparent;
+    pointer-events: none;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* 滑鼠靠近 (hover) 或 拖曳中 (is-dragging) 時觸發彈出動畫 */
+.hdr-thumb:hover::after, .hdr-thumb.is-dragging::after { opacity: 1; visibility: visible; transform: translateX(-50%) translateY(-2px) scale(0.83); }
+.hdr-thumb:hover::before, .hdr-thumb.is-dragging::before { opacity: 1; visibility: visible; transform: translateX(-50%) translateY(2px) scale(0.83); }
+
+/* Core 專屬藍色系 */
+.hdr-thumb[data-target="core"] { border-color: var(--primary); }
+.hdr-thumb[data-target="core"]::after { background: var(--primary); }
+.hdr-thumb[data-target="core"]::before { border-top-color: var(--primary); }
+.hdr-thumb[data-target="core"]:hover, .hdr-thumb[data-target="core"].is-dragging { box-shadow: 0 0 6px rgba(13,110,253,0.6); }
+
+/* Boundary 專屬綠色系 */
+.hdr-thumb[data-target="boundary"] { border-color: var(--success); }
+.hdr-thumb[data-target="boundary"]::after { background: var(--success); }
+.hdr-thumb[data-target="boundary"]::before { border-top-color: var(--success); }
+.hdr-thumb[data-target="boundary"]:hover, .hdr-thumb[data-target="boundary"].is-dragging { box-shadow: 0 0 6px rgba(25,135,84,0.6); }
+
+.scale-adjust-container { width: 100%; padding-bottom: 12px; margin-bottom: 5px; border-bottom: 1px dashed var(--border-color); }
+.native-range { width: 100%; cursor: pointer; }
+.hdr-btn-group { display: flex; gap: 8px; margin-top: 10px; }
+.btn-lock-all { background-color: #6f42c1; color: white; font-size: 0.85em; padding: 6px; width: 100%; }
+.btn-unlock-all { background-color: var(--danger); color: white; font-size: 0.85em; padding: 6px; width: 100%; }
+.btn-auto-hdr { background-color: #17a2b8; color: white; flex: 1; font-size: 0.85em; padding: 6px; }
+
+/* --- Methodology 按鈕與面板樣式 (升級版 Backdrop + Accordion) --- */
+.btn-help {
+    background: white;
+    color: var(--text-muted);
+    border: 1px solid var(--text-muted);
+    border-radius: 50%;
+    width: 22px;
+    height: 22px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: all 0.2s ease;
+}
+.btn-help:hover { transform: scale(1.1); background: white; }
+
+/* 1. 毛玻璃背景遮罩 */
+.methodology-backdrop {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+    z-index: 2000; display: flex; justify-content: center; align-items: center;
+    opacity: 0; visibility: hidden; transition: all 0.3s ease;
+}
+.methodology-backdrop.active { opacity: 1; visibility: visible; }
+
+/* 2. 置中浮動資訊卡片 (動態高度收縮) */
+.methodology-container {
+    width: 85%; max-width: 900px; 
+    max-height: 88vh; /* 將 height 改為 max-height，讓視窗能隨內容收縮 */
+    background: #ffffff; border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+    display: flex; flex-direction: column; overflow: hidden;
+    transform: translateY(20px); transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+.methodology-backdrop.active .methodology-container { transform: translateY(0); }
+
+.methodology-header {
+    padding: 15px 30px; background: #f8f9fa; border-bottom: 1px solid var(--border-color);
+    display: flex; justify-content: space-between; align-items: center; flex-shrink: 0;
+}
+.methodology-header h2 { margin: 0; color: var(--primary); font-size: 1.5em; display: flex; align-items: center; gap: 10px; }
+.close-methodology-btn { background: none; border: none; font-size: 1.5em; cursor: pointer; color: var(--text-muted); transition: color 0.2s; }
+.close-methodology-btn:hover { color: var(--danger); }
+
+.methodology-body {
+    /* 讓內容區塊自動適應高度，超出 max-height 時才會出現捲軸 */
+    flex-grow: 1; overflow-y: auto; padding: 25px 40px; scroll-behavior: smooth; background: #f8f9fa;
+}
+
+/* 3. 手風琴摺疊樣式 (Accordion) */
+.methodology-section { 
+    margin-bottom: 15px; background: #fff; border-radius: 8px; 
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04); border: 1px solid #dee2e6; overflow: hidden; 
+    transition: box-shadow 0.2s; 
+}
+.methodology-section:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+
+/* 消除最後一個摺疊面板底部的外距，確保全收合時底部不留空白 */
+.methodology-section:last-child { margin-bottom: 0; }
+
+/* 隱藏原生箭頭 */
+.methodology-section summary { 
+    display: flex; justify-content: space-between; align-items: center; padding: 18px 25px; 
+    cursor: pointer; background: #fff; user-select: none; transition: background 0.2s;
+}
+.methodology-section summary::-webkit-details-marker { display: none; }
+.methodology-section summary:hover { background: #fdfdfe; }
+.methodology-section h3 { margin: 0; color: #212529; font-size: 1.15em; border: none; padding: 0; display: flex; align-items: center; gap: 8px;}
+
+/* 自訂旋轉箭頭圖示 */
+.toggle-icon { 
+    width: 10px; height: 10px; border-right: 2.5px solid var(--primary); border-bottom: 2.5px solid var(--primary); 
+    transform: rotate(45deg); transition: transform 0.3s ease; 
+}
+.methodology-section[open] .toggle-icon { transform: rotate(-135deg); margin-top: 5px; }
+.methodology-section[open] summary { border-bottom: 1px solid #eee; background: #fdfdfe; }
+
+/* 展開內容動畫 */
+.details-content { padding: 25px; animation: slideDown 0.3s ease-out forwards; transform-origin: top; }
+@keyframes slideDown { 
+    from { opacity: 0; transform: translateY(-10px); } 
+    to { opacity: 1; transform: translateY(0); } 
+}
+
+.methodology-section h4 { color: #0d6efd; margin-top: 0px; margin-bottom: 10px; font-size: 1.05em; border-left: 4px solid var(--primary); padding-left: 8px;}
+.methodology-section ul { padding-left: 20px; color: #495057; line-height: 1.6; margin: 0 0 20px 0; }
+.methodology-section li { margin-bottom: 8px; }
+.math-block { background: #f8f9fa; padding: 10px; border-radius: 6px; text-align: center; margin: 10px 0; overflow-x: auto; border: 1px dashed #dee2e6; color: #212529; }
+/* --- 嵌套數學推導：1D 分離式展開框 --- */
+.math-collapse {
+    margin: 15px 0; border: 1px solid #b8daff; border-radius: 8px; 
+    background: #f8fbff; overflow: hidden; transition: all 0.3s ease;
+}
+.math-collapse summary {
+    display: flex; 
+    justify-content: center; /* 將內容完全置中 */
+    align-items: center; 
+    position: relative;      /* 加入相對定位，作為右側按鈕的定位基準 */
+    padding: 12px 18px; cursor: pointer; background: #e6f2ff; 
+    user-select: none; transition: background 0.2s;
+}
+.math-collapse summary::-webkit-details-marker { display: none; }
+.math-collapse summary:hover { background: #d9ebff; }
+
+.math-summary-content { 
+    display: flex; flex-direction: column; 
+    align-items: center; /* 讓標題與公式本身也置中對齊 */
+    gap: 6px; 
+}
+.math-title { font-size: 0.85em; font-weight: 700; color: #0056b3; }
+.math-preview { font-size: 1.05em; color: #212529; }
+
+/* 展開指示器 (藥丸形狀) */
+.expand-indicator { 
+    position: absolute; right: 18px; /* 將按鈕絕對定位在右側，不干擾公式的置中 */
+    font-size: 0.85em; color: #0d6efd; font-weight: bold; 
+    background: rgba(13, 110, 253, 0.1); padding: 4px 10px; 
+    border-radius: 20px; transition: all 0.2s;
+}
+.math-collapse:hover .expand-indicator { background: rgba(13, 110, 253, 0.2); }
+.expand-indicator::after { content: "展開 FLOW ▼"; }
+.math-collapse[open] .expand-indicator::after { content: "收合 FLOW ▲"; }
+
+.math-collapse-body { padding: 20px; border-top: 1px dashed #b8daff; }
+.math-step { margin-bottom: 15px; }
+.step-label { 
+    font-size: 0.85em; font-weight: 600; color: #495057; display: block; 
+    margin-bottom: 6px; border-left: 3px solid #0d6efd; padding-left: 8px;
+}
+.math-step .math-block { margin: 0; background: #ffffff; border: 1px solid #dee2e6; box-shadow: inset 0 1px 3px rgba(0,0,0,0.02);}
+.math-final { 
+    margin-top: 20px; padding: 12px; background: #e8f5e9; border: 1px solid #c3e6cb; 
+    border-radius: 6px; text-align: center; color: #155724; font-weight: bold; font-size: 1.05em;
+}
