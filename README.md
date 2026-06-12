@@ -44,8 +44,8 @@
 
 **A Serverless, Edge-Computing Workstation for Automated Western Blot Quantification**
 
-[![Version](https://img.shields.io/badge/version-v12.5.08-blue.svg?style=for-the-badge&logo=appveyor)](https://github.com/your-username/auto-quantifier)
-[![Build: Vite](https://img.shields.io/badge/Build-Vite_Single_File-646CFF?style=for-the-badge&logo=vite)](https://github.com/your-username/auto-quantifier)
+[![Version](https://img.shields.io/badge/version-v12.5.08-blue.svg?style=for-the-badge&logo=appveyor)](https://github.com/william850627-byte/auto-quantifier)
+[![Build: Vite](https://img.shields.io/badge/Build-Vite_Single_File-646CFF?style=for-the-badge&logo=vite)](https://github.com/william850627-byte/auto-quantifier)
 [![License: MIT](https://img.shields.io/badge/License-MIT-success.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
 [![Platform: Web Browser](https://img.shields.io/badge/Platform-Web_Browser_(Serverless)-orange.svg)](https://auto-quantifier.netlify.app)
 [![Paper](https://img.shields.io/badge/bioRxiv-In_Preparation-b31b1b.svg?style=for-the-badge)](https://biorxiv.org)
@@ -61,7 +61,7 @@
 
 ## 🎯 Overview & The "Why"
 
-**Auto Quantifier (AQ)** is a high-performance, browser-based automated scientific imaging workstation explicitly designed to address the **reproducibility crisis** in Western Blotting (WB) and densitometry analysis. 
+**Auto Quantifier (AQ)** is a high-performance, browser-based automated scientific imaging workstation explicitly designed to address the **Reproducibility Crisis** in Western Blotting (WB) and densitometry analysis. 
 
 Traditional tools (e.g., ImageJ/Fiji) rely heavily on subjective manual bounding boxes and global thresholding, leading to severe inter-operator bias. AQ establishes an objective, mathematically rigorous boundary for every protein band, effectively eliminating human bias. AQ revolutionizes this workflow by introducing **Hysteresis Thresholding with Breadth-First Search (BFS)** & **Maximally Stable Extremal Regions (MSER)** for topology-based automated extraction and **Log-Driven 1D Watershed segmentation** for resolving weakened, fused, smeared bands.
 
@@ -123,24 +123,6 @@ Publishing in top-tier journals requires absolute data integrity. AQ automatical
 
 ---
 
-## 🎬 Quick Showcases
-
-*(💡 Note for maintainer: Replace the placeholders below with actual GIF URLs)*
-
-### 1. Zero-Click Extraction via Auto HDR (MSER)
-![Auto HDR Demo](https://via.placeholder.com/800x400/1e1e1e/8be9fd?text=[+Upload+Auto_HDR.gif+Here+])
-> AQ automatically scans topological parameters to lock onto stable protein bands while filtering out artifacts based on geometric features.
-
-### 2. Resolving Fused Bands with 1D Watershed
-![Watershed Demo](https://via.placeholder.com/800x400/1e1e1e/bd93f9?text=[+Upload+Magic_Wand.gif+Here+])
-> Applying Log-Driven BFS and Intensity-Symmetric Trimming to perfectly slice fused bands without asymmetric trailing.
-
-### 3. One-Click GLP Audit Report
-![PDF Report Demo](https://via.placeholder.com/800x400/1e1e1e/50fa7b?text=[+Upload+PDF_Report.gif+Here+])
-> Generating a read-only PDF containing digital signatures, visual proofs, and double-normalized biostatistical tables.
-
----
-
 ## 🚀 Try It Now (Live Demo)
 
 You don't need to install anything. Experience AQ directly in your browser:
@@ -192,7 +174,11 @@ Corrects the classic "smiling effect" in electrophoresis using independent left/
 2. **Downsampled Morphological Opening**: 
 A linear-time $\mathcal{O}(W \cdot H \cdot r)$ rolling ball algorithm for dynamic background subtraction.
 
-3. **Forgiving Plateau Tracking**: 
+3. **Auto HDR Topology (MSER)**: Simulates a threshold "water level descent" to track signal lineages dynamically, locking onto the most mathematically stable topographical plateau of protein bands to eliminate subjective human bias.
+
+4. **1D Projected Watershed Segmentation**: Intelligently separates physically fused/smeared bands using 1D spectral valley detection and intensity-symmetric trimming, preventing asymmetric trailing artifacts.
+
+5. **Forgiving Plateau Tracking**: 
 A custom state-machine implemented over the MSER algorithm that allows bands to greedily converge during threshold descent without being killed by micro-fluctuations.
 
 *(Detailed mathematical derivations are available in the Methodology panel within the application and our upcoming publication).*
@@ -207,7 +193,7 @@ If you utilize Auto Quantifier in your research, please cite our upcoming paper:
 @article{AutoQuantifier2026,
   title={Auto Quantifier: An Edge-Computing Serverless Workstation for Reproducible Western Blot Analysis via MSER Topology},
   author={SHIH HONG_William Frederic_YIR • HUANG},
-  publisher={NCKU BIMB Yu Lab},
+  orcid={0009-0008-2033-4880},
   journal={bioRxiv (Manuscript in preparation)},
   year={2026},
   doi={10.1101/2026.xx.xx.xxxxxx}
