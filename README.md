@@ -91,8 +91,12 @@ Built entirely on a dual-engine Web Worker architecture, AQ processes lossless m
 
 ## 🎬 Visual Highlights (Features in Action)
 
-### 0. Hysteresis Thresholding with BFS (Basic)
+### 0. ▶ 𝓓ynamic Analysis
+Upload Image -> Select Interest Region -> Correction (Rotation/Smile) -> Auto Rolling Ball radius Estimation -> Hysteresis BFS -> Data Locking
 
+<div align="center">
+  <img src="https://github.com/user-attachments/assets/71d541bf-080f-4e76-a0b2-0a3cd293ef8c" alt="Basic" width="800">
+</div>
 <div align="center">
   <img src="https://github.com/user-attachments/assets/20b26cad-aa9e-45f1-a017-9c6e093fd959" alt="Basic" width="800">
 </div>
@@ -118,7 +122,7 @@ Tired of fused and smeared bands? AQ projects 2D pixels into a 1D spectral valle
 Publishing in top-tier journals requires absolute data integrity. AQ automatically computes **Double-Normalization Fold Changes** (Internal Control & Reference Lane). With one click, it exports a Read-Only PDF report embedded with **SHA-256 cryptographic fingerprints** and an immutable Audit Trail.
 
 <div align="center">
-  <img src="./assets/BASIC_03.gif" alt="PDF Report Demo" width="800">
+  <img src="./assets/Biostats.gif" alt="PDF Report Demo" width="800">
 </div>
 
 ---
