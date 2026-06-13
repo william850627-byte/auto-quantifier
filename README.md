@@ -102,7 +102,7 @@ Built entirely on a dual-engine Web Worker architecture, AQ processes lossless m
 Forget manual thresholding. AQ simulates a "water-level descent" (Threshold Descent) to find the most stable topological plateau for each band. It automatically locks onto strong signals while employing adaptive morphological sweeps to rescue faint bands submerged in background noise.
 
 <div align="center">
-  <img src="./assets/EMSR_01.gif" alt="Auto HDR Demo" width="800">
+  <img src="https://github.com/user-attachments/assets/13699953-24e8-43e2-9828-c5af3319d2db" alt="Auto HDR Demo" width="800">
 </div>
 <br>
 
@@ -110,7 +110,7 @@ Forget manual thresholding. AQ simulates a "water-level descent" (Threshold Desc
 Tired of fused and smeared bands? AQ projects 2D pixels into a 1D spectral valley. Combined with a Log-Driven Breadth-First Search (BFS) restricted by dynamic lane clamping, it applies **Intensity-Symmetric Trimming** to cleanly cleave touching bands without the infamous "asymmetric tailing" artifacts.
 
 <div align="center">
-  <img src="./assets/Magicwand.gif" alt="Magic Wand Demo" width="800">
+  <img src="https://github.com/user-attachments/assets/8ed8abd9-3d80-4141-98ea-b0a1550e9fb8" alt="Magic Wand Demo" width="800">
 </div>
 <br>
 
